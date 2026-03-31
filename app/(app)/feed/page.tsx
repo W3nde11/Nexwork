@@ -86,61 +86,65 @@ export default function FeedPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 md:px-6">
-      <h1 className="text-2xl font-bold text-nw-blue">Feed de trabalhos</h1>
-      <p className="mt-1 font-inter text-sm text-nw-gray">
+    <div className="container py-8">
+      <h1 className="font-display text-2xl font-bold text-foreground md:text-3xl">
+        Feed de trabalhos
+      </h1>
+      <p className="mt-1 text-sm text-muted-foreground">
         Oportunidades em cards — publique e compartilhe o link da vaga para contato.
       </p>
 
-      <section className="mt-8 rounded-2xl border border-nw-blue/10 bg-white p-6 shadow-card">
-        <h2 className="text-lg font-semibold text-nw-blue">Nova publicação</h2>
+      <section className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-card">
+        <h2 className="font-display text-lg font-semibold text-foreground">Nova publicação</h2>
         <form onSubmit={createJob} className="mt-4 space-y-4">
           {error && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+            <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              {error}
+            </p>
           )}
           <div>
-            <label className="block text-sm font-medium text-nw-blue">Título</label>
+            <label className="block text-sm font-medium text-foreground">Título</label>
             <input
               required
               minLength={3}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-nw-blue/15 px-3 py-2 font-inter text-sm"
+              className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="Ex.: Dev React — 3 meses"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-nw-blue">Descrição</label>
+            <label className="block text-sm font-medium text-foreground">Descrição</label>
             <textarea
               required
               minLength={10}
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-nw-blue/15 px-3 py-2 font-inter text-sm"
+              className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="Escopo, prazo, stack…"
             />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium text-nw-blue">
+              <label className="block text-sm font-medium text-foreground">
                 Orçamento (opcional)
               </label>
               <input
                 value={budget}
                 onChange={(e) => setBudget(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-nw-blue/15 px-3 py-2 font-inter text-sm"
+                className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Ex.: R$ 5k–8k"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-nw-blue">
+              <label className="block text-sm font-medium text-foreground">
                 Tags (vírgula)
               </label>
               <input
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-nw-blue/15 px-3 py-2 font-inter text-sm"
+                className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="react, remoto, pj"
               />
             </div>
@@ -148,7 +152,7 @@ export default function FeedPage() {
           <button
             type="submit"
             disabled={saving}
-            className="rounded-lg bg-nw-green px-5 py-2.5 text-sm font-semibold text-white hover:bg-nw-green/90 disabled:opacity-60"
+            className="rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground shadow-md shadow-accent/20 transition hover:bg-accent/90 disabled:opacity-60"
           >
             {saving ? "Publicando…" : "Publicar no feed"}
           </button>
@@ -156,11 +160,13 @@ export default function FeedPage() {
       </section>
 
       <section className="mt-10">
-        <h2 className="text-lg font-semibold text-nw-blue">Todas as oportunidades</h2>
+        <h2 className="font-display text-lg font-semibold text-foreground">
+          Todas as oportunidades
+        </h2>
         {loading ? (
-          <p className="mt-4 font-inter text-nw-gray">Carregando…</p>
+          <p className="mt-4 text-sm text-muted-foreground">Carregando…</p>
         ) : jobs.length === 0 ? (
-          <p className="mt-4 font-inter text-nw-gray">Nenhuma vaga ainda. Seja o primeiro!</p>
+          <p className="mt-4 text-sm text-muted-foreground">Nenhuma vaga ainda. Seja o primeiro!</p>
         ) : (
           <ul className="mt-4 grid gap-4 md:grid-cols-2">
             {jobs.map((job) => {
@@ -168,40 +174,38 @@ export default function FeedPage() {
               return (
                 <li
                   key={job.id}
-                  className="flex flex-col rounded-2xl border border-nw-blue/10 bg-white p-5 shadow-card"
+                  className="flex flex-col rounded-2xl border border-border bg-card p-5 shadow-card transition hover:border-primary/20"
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-semibold text-nw-blue">{job.title}</h3>
+                    <h3 className="font-display font-semibold text-foreground">{job.title}</h3>
                     {job.budget && (
-                      <span className="shrink-0 rounded-md bg-nw-green/15 px-2 py-0.5 text-xs font-medium text-nw-blue">
+                      <span className="shrink-0 rounded-md bg-accent/15 px-2 py-0.5 text-xs font-medium text-foreground">
                         {job.budget}
                       </span>
                     )}
                   </div>
-                  <p className="mt-2 line-clamp-3 font-inter text-sm text-nw-blue/80">
-                    {job.description}
-                  </p>
+                  <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{job.description}</p>
                   {job.tags?.length > 0 && (
                     <div className="mt-3 flex flex-wrap gap-1">
                       {job.tags.map((t) => (
                         <span
                           key={t}
-                          className="rounded-full bg-nw-blue/5 px-2 py-0.5 text-xs text-nw-blue/90"
+                          className="rounded-full bg-secondary px-2 py-0.5 text-xs text-secondary-foreground"
                         >
                           {t}
                         </span>
                       ))}
                     </div>
                   )}
-                  <p className="mt-3 font-inter text-xs text-nw-gray">
+                  <p className="mt-3 text-xs text-muted-foreground">
                     {job.contractor?.company
                       ? `${job.contractor.name} · ${job.contractor.company}`
                       : job.contractor?.name}
                   </p>
-                  <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-nw-blue/5 pt-4">
+                  <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-border pt-4">
                     <Link
                       href={`/v/${job.id}`}
-                      className="text-sm font-medium text-nw-purple hover:underline"
+                      className="text-sm font-medium text-primary hover:underline"
                       target="_blank"
                       rel="noreferrer"
                     >
@@ -211,7 +215,7 @@ export default function FeedPage() {
                       <button
                         type="button"
                         onClick={() => removeJob(job.id)}
-                        className="text-sm font-medium text-red-600 hover:underline"
+                        className="text-sm font-medium text-destructive hover:underline"
                       >
                         Excluir
                       </button>

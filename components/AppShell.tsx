@@ -19,7 +19,7 @@ export function AppShell({
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex min-h-screen flex-col bg-background">
       <AppHeader userName={userName} onLogout={onLogout} />
       <main className="flex-1">{children}</main>
     </div>

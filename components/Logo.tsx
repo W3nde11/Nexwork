@@ -1,22 +1,36 @@
+import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 
-export function Logo({ className }: { className?: string }) {
+export function Logo({
+  className,
+  footer,
+}: {
+  className?: string;
+  /** Fundo claro no rodapé escuro para o wordmark navy aparecer bem */
+  footer?: boolean;
+}) {
   return (
     <Link
       href="/"
       className={cn(
-        "inline-flex items-center gap-2 font-semibold tracking-tight text-nw-blue",
+        "inline-flex items-center transition-opacity hover:opacity-90",
+        footer && "rounded-lg bg-white/95 p-2 shadow-sm",
         className
       )}
     >
-      <span
-        className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-nw-purple to-nw-green text-sm font-bold text-white shadow-md"
-        aria-hidden
-      >
-        NW
-      </span>
-      <span className="text-lg">NexWork</span>
+      <Image
+        src="/logo-nexwork.png"
+        alt="NexWork — Organize seu trabalho. Evolua seu negócio."
+        width={260}
+        height={72}
+        sizes="(max-width: 768px) 200px, 260px"
+        className={cn(
+          "h-8 w-auto object-contain object-left md:h-9",
+          footer && "md:h-10"
+        )}
+        priority
+      />
     </Link>
   );
 }

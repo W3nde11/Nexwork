@@ -132,18 +132,18 @@ export default function PublicJobChatPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-nw-white">
-        <p className="text-nw-gray">Carregando…</p>
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <p className="text-muted-foreground">Carregando…</p>
       </div>
     );
   }
 
   if (!job) {
     return (
-      <div className="min-h-screen bg-nw-white px-4 py-10">
+      <div className="min-h-screen bg-background px-4 py-10">
         <div className="mx-auto max-w-md text-center">
-          <p className="text-red-600">{error || "Não encontrado."}</p>
-          <Link href="/" className="mt-4 inline-block text-nw-purple">
+          <p className="text-destructive">{error || "Não encontrado."}</p>
+          <Link href="/" className="mt-4 inline-block text-primary font-medium hover:underline">
             Voltar ao início
           </Link>
         </div>
@@ -152,41 +152,42 @@ export default function PublicJobChatPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-nw-white to-nw-purple/5">
-      <header className="mx-auto flex max-w-2xl items-center justify-between px-4 py-4">
-        <Logo />
-        <span className="rounded-full bg-nw-blue/5 px-3 py-1 text-xs font-medium text-nw-blue">
-          Contato pela vaga
-        </span>
+    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/30">
+      <header className="glass sticky top-0 z-10">
+        <div className="container flex h-14 max-w-2xl items-center justify-between">
+          <Logo />
+          <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+            Contato pela vaga
+          </span>
+        </div>
       </header>
 
-      <main className="mx-auto max-w-2xl px-4 pb-12">
-        <div className="rounded-2xl border border-nw-blue/10 bg-white p-6 shadow-card">
-          <h1 className="text-xl font-bold text-nw-blue">{job.title}</h1>
+      <main className="container max-w-2xl px-4 pb-12">
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-card">
+          <h1 className="font-display text-xl font-bold text-foreground">{job.title}</h1>
           {job.budget && (
-            <p className="mt-1 text-sm font-medium text-nw-green">{job.budget}</p>
+            <p className="mt-1 text-sm font-medium text-accent">{job.budget}</p>
           )}
-          <p className="mt-4 whitespace-pre-wrap font-inter text-sm text-nw-blue/85">
-            {job.description}
-          </p>
-          <p className="mt-4 text-xs text-nw-gray">
-            Publicado por {job.contractor.company
+          <p className="mt-4 whitespace-pre-wrap text-sm text-muted-foreground">{job.description}</p>
+          <p className="mt-4 text-xs text-muted-foreground">
+            Publicado por{" "}
+            {job.contractor.company
               ? `${job.contractor.name} (${job.contractor.company})`
               : job.contractor.name}
           </p>
         </div>
 
-        <div className="mt-6 rounded-2xl border border-nw-blue/10 bg-white shadow-card">
-          <div className="border-b border-nw-blue/10 px-4 py-3">
-            <h2 className="font-semibold text-nw-blue">Conversa</h2>
-            <p className="mt-1 font-inter text-xs text-nw-gray">
+        <div className="mt-6 rounded-2xl border border-border bg-card shadow-card">
+          <div className="border-b border-border px-4 py-3">
+            <h2 className="font-display font-semibold text-foreground">Conversa</h2>
+            <p className="mt-1 text-xs text-muted-foreground">
               Sem cadastro na NexWork — apenas seu nome para identificar a conversa.
             </p>
           </div>
 
-          <div className="h-64 overflow-y-auto p-4 space-y-3">
+          <div className="h-64 space-y-3 overflow-y-auto p-4">
             {messages.length === 0 && (
-              <p className="text-center font-inter text-sm text-nw-gray">
+              <p className="text-center text-sm text-muted-foreground">
                 Envie a primeira mensagem para o contratante.
               </p>
             )}
@@ -198,14 +199,14 @@ export default function PublicJobChatPage() {
                 <div
                   className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm ${
                     m.sender === "guest"
-                      ? "bg-nw-green text-white"
-                      : "bg-nw-blue/5 text-nw-blue"
+                      ? "bg-accent text-accent-foreground shadow-md shadow-accent/20"
+                      : "bg-secondary text-secondary-foreground"
                   }`}
                 >
                   <p className="whitespace-pre-wrap">{m.body}</p>
                   <p
                     className={`mt-1 text-[10px] ${
-                      m.sender === "guest" ? "text-white/80" : "text-nw-gray"
+                      m.sender === "guest" ? "text-accent-foreground/80" : "text-muted-foreground"
                     }`}
                   >
                     {new Date(m.createdAt).toLocaleString("pt-BR")}
@@ -216,27 +217,25 @@ export default function PublicJobChatPage() {
             <div ref={bottomRef} />
           </div>
 
-          <form onSubmit={send} className="border-t border-nw-blue/10 p-4 space-y-3">
-            {error && (
-              <p className="text-sm text-red-600">{error}</p>
-            )}
+          <form onSubmit={send} className="space-y-3 border-t border-border p-4">
+            {error && <p className="text-sm text-destructive">{error}</p>}
             <div>
-              <label className="block text-xs font-medium text-nw-blue">Seu nome</label>
+              <label className="block text-xs font-medium text-foreground">Seu nome</label>
               <input
                 value={guestName}
                 onChange={(e) => setGuestName(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-nw-blue/15 px-3 py-2 font-inter text-sm"
+                className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Como quer ser chamado"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-nw-blue">Mensagem</label>
+              <label className="block text-xs font-medium text-foreground">Mensagem</label>
               <textarea
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 rows={3}
-                className="mt-1 w-full rounded-lg border border-nw-blue/15 px-3 py-2 font-inter text-sm"
+                className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Apresente-se e comente seu interesse…"
                 required
               />
@@ -244,7 +243,7 @@ export default function PublicJobChatPage() {
             <button
               type="submit"
               disabled={sending}
-              className="w-full rounded-lg bg-nw-purple py-2.5 text-sm font-semibold text-white hover:bg-nw-purple/90 disabled:opacity-60"
+              className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/25 transition hover:bg-primary/90 disabled:opacity-60"
             >
               {sending ? "Enviando…" : "Enviar"}
             </button>

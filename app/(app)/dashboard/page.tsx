@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/cn";
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<{ jobCount: number; conversationCount: number } | null>(
@@ -20,14 +22,14 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 md:px-6">
-      <h1 className="text-2xl font-bold text-nw-blue">Dashboard</h1>
-      <p className="mt-1 font-inter text-nw-gray">
+    <div className="container py-8">
+      <h1 className="font-display text-2xl font-bold text-foreground md:text-3xl">Dashboard</h1>
+      <p className="mt-1 text-sm text-muted-foreground">
         Visão geral das suas publicações e conversas.
       </p>
 
       {err && (
-        <p className="mt-4 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900">
+        <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
           {err} Configure <code className="rounded bg-amber-100 px-1">MONGODB_URI</code> no{" "}
           <code className="rounded bg-amber-100 px-1">.env.local</code>.
         </p>
@@ -36,33 +38,33 @@ export default function DashboardPage() {
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Link
           href="/feed"
-          className="rounded-2xl border border-nw-blue/10 bg-white p-6 shadow-card transition hover:border-nw-purple/30"
+          className="group rounded-2xl border border-border bg-card p-6 shadow-card transition hover:border-primary/30"
         >
-          <p className="font-inter text-sm text-nw-gray">Trabalhos publicados</p>
-          <p className="mt-2 text-3xl font-bold text-nw-blue">
+          <p className="text-sm text-muted-foreground">Trabalhos publicados</p>
+          <p className="mt-2 font-display text-3xl font-bold text-foreground">
             {stats ? stats.jobCount : "—"}
           </p>
-          <p className="mt-3 text-sm font-medium text-nw-purple">Abrir feed →</p>
+          <p className="mt-3 text-sm font-medium text-primary">Abrir feed →</p>
         </Link>
         <Link
           href="/chat"
-          className="rounded-2xl border border-nw-blue/10 bg-white p-6 shadow-card transition hover:border-nw-green/40"
+          className="group rounded-2xl border border-border bg-card p-6 shadow-card transition hover:border-accent/40"
         >
-          <p className="font-inter text-sm text-nw-gray">Conversas ativas</p>
-          <p className="mt-2 text-3xl font-bold text-nw-blue">
+          <p className="text-sm text-muted-foreground">Conversas ativas</p>
+          <p className="mt-2 font-display text-3xl font-bold text-foreground">
             {stats ? stats.conversationCount : "—"}
           </p>
-          <p className="mt-3 text-sm font-medium text-nw-green">Ver mensagens →</p>
+          <p className="mt-3 text-sm font-medium text-accent">Ver mensagens →</p>
         </Link>
-        <div className="rounded-2xl border border-dashed border-nw-blue/20 bg-nw-white p-6 sm:col-span-2 lg:col-span-1">
-          <p className="font-inter text-sm text-nw-gray">Próximo passo</p>
-          <p className="mt-2 text-sm text-nw-blue/90">
-            Publique uma vaga e compartilhe o link com profissionais — eles entram em
-            contato pelo chat sem precisar de painel próprio.
+        <div className="rounded-2xl border border-dashed border-border bg-secondary/30 p-6 sm:col-span-2 lg:col-span-1">
+          <p className="text-sm text-muted-foreground">Próximo passo</p>
+          <p className="mt-2 text-sm text-foreground/90">
+            Publique uma vaga e compartilhe o link com profissionais — eles entram em contato
+            pelo chat sem precisar de painel próprio.
           </p>
           <Link
             href="/feed"
-            className="mt-4 inline-block rounded-lg bg-nw-blue px-4 py-2 text-sm font-semibold text-white"
+            className={cn(buttonVariants({ variant: "hero", size: "sm" }), "mt-4 inline-flex")}
           >
             Nova publicação
           </Link>

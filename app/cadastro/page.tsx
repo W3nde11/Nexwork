@@ -3,7 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Logo } from "@/components/Logo";
+import { LandingHeader } from "@/components/LandingHeader";
+import { LandingFooter } from "@/components/LandingFooter";
+import { Button } from "@/components/ui/button";
 
 export default function CadastroPage() {
   const router = useRouter();
@@ -22,7 +24,12 @@ export default function CadastroPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, company: company || undefined, email, password }),
+        body: JSON.stringify({
+          name,
+          company: company || undefined,
+          email,
+          password,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -37,94 +44,97 @@ export default function CadastroPage() {
   }
 
   return (
-    <div className="min-h-screen bg-nw-white px-4 py-10">
-      <div className="mx-auto mb-8 flex max-w-md justify-center">
-        <Logo />
-      </div>
-      <div className="mx-auto w-full max-w-md rounded-2xl border border-nw-blue/10 bg-white p-8 shadow-card">
-        <h1 className="text-xl font-semibold text-nw-blue">Cadastro — Contratante</h1>
-        <p className="mt-1 font-inter text-sm text-nw-gray">
-          Crie sua conta para publicar trabalhos e gerenciar mensagens.
-        </p>
-        <form onSubmit={onSubmit} className="mt-6 space-y-4">
-          {error && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-              {error}
-            </p>
-          )}
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-nw-blue">
-              Nome completo
-            </label>
-            <input
-              id="name"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-nw-blue/15 px-3 py-2 font-inter text-nw-blue outline-none ring-nw-purple/30 focus:ring-2"
-            />
+    <div className="flex min-h-screen flex-col bg-background">
+      <LandingHeader />
+      <main className="flex flex-1 items-center justify-center py-20">
+        <div className="w-full max-w-md mx-auto p-8">
+          <div className="mb-8 text-center">
+            <h1 className="mb-2 font-display text-3xl font-bold text-foreground">
+              Criar conta
+            </h1>
+            <p className="text-muted-foreground">Contratante — publique e gerencie mensagens</p>
           </div>
-          <div>
-            <label
-              htmlFor="company"
-              className="block text-sm font-medium text-nw-blue"
-            >
-              Empresa (opcional)
-            </label>
-            <input
-              id="company"
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-nw-blue/15 px-3 py-2 font-inter text-nw-blue outline-none ring-nw-purple/30 focus:ring-2"
-            />
-          </div>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-nw-blue">
-              E-mail
-            </label>
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-nw-blue/15 px-3 py-2 font-inter text-nw-blue outline-none ring-nw-purple/30 focus:ring-2"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-nw-blue"
-            >
-              Senha (mín. 6 caracteres)
-            </label>
-            <input
-              id="password"
-              type="password"
-              autoComplete="new-password"
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-nw-blue/15 px-3 py-2 font-inter text-nw-blue outline-none ring-nw-purple/30 focus:ring-2"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-nw-purple py-2.5 text-sm font-semibold text-white transition hover:bg-nw-purple/90 disabled:opacity-60"
-          >
-            {loading ? "Criando conta…" : "Cadastrar"}
-          </button>
-        </form>
-        <p className="mt-6 text-center font-inter text-sm text-nw-gray">
-          Já tem conta?{" "}
-          <Link href="/login" className="font-medium text-nw-blue hover:underline">
-            Entrar
-          </Link>
-        </p>
-      </div>
+          <form onSubmit={onSubmit} className="space-y-4">
+            {error && (
+              <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                {error}
+              </p>
+            )}
+            <div>
+              <label htmlFor="name" className="mb-1 block text-sm font-medium text-foreground">
+                Nome completo
+              </label>
+              <input
+                id="name"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="h-11 w-full rounded-lg border border-border bg-card px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="Seu nome"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="company"
+                className="mb-1 block text-sm font-medium text-foreground"
+              >
+                Empresa (opcional)
+              </label>
+              <input
+                id="company"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                className="h-11 w-full rounded-lg border border-border bg-card px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="Nome da empresa"
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="mb-1 block text-sm font-medium text-foreground">
+                E-mail
+              </label>
+              <input
+                id="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="h-11 w-full rounded-lg border border-border bg-card px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="seu@email.com"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="password"
+                className="mb-1 block text-sm font-medium text-foreground"
+              >
+                Senha (mín. 6 caracteres)
+              </label>
+              <input
+                id="password"
+                type="password"
+                autoComplete="new-password"
+                required
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-11 w-full rounded-lg border border-border bg-card px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="••••••••"
+              />
+            </div>
+            <Button variant="hero" type="submit" disabled={loading} className="h-11 w-full">
+              {loading ? "Criando conta…" : "Criar conta"}
+            </Button>
+          </form>
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            Já tem conta?{" "}
+            <Link href="/login" className="font-medium text-primary hover:underline">
+              Entrar
+            </Link>
+          </p>
+        </div>
+      </main>
+      <LandingFooter />
     </div>
   );
 }

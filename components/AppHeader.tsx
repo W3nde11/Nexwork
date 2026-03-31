@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
 import { cn } from "@/lib/cn";
+import { buttonVariants } from "@/components/ui/button";
 
 const nav = [
   { href: "/dashboard", label: "Dashboard" },
@@ -21,8 +22,8 @@ export function AppHeader({
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-nw-blue/10 bg-nw-white/90 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 md:px-6">
+    <header className="sticky top-0 z-40 glass">
+      <div className="container flex h-16 items-center justify-between gap-4">
         <Logo />
         <nav className="hidden items-center gap-1 md:flex" aria-label="Principal">
           {nav.map((item) => (
@@ -32,29 +33,29 @@ export function AppHeader({
               className={cn(
                 "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                 pathname === item.href
-                  ? "bg-nw-blue text-white"
-                  : "text-nw-blue/80 hover:bg-nw-blue/5"
+                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
               )}
             >
               {item.label}
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-3">
-          <span className="hidden max-w-[140px] truncate text-sm text-nw-gray md:inline">
+        <div className="flex items-center gap-2 md:gap-3">
+          <span className="hidden max-w-[140px] truncate text-sm text-muted-foreground md:inline">
             {userName}
           </span>
           <button
             type="button"
             onClick={onLogout}
-            className="rounded-lg border border-nw-blue/15 px-3 py-1.5 text-sm font-medium text-nw-blue hover:bg-nw-blue/5"
+            className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
           >
             Sair
           </button>
         </div>
       </div>
       <nav
-        className="flex gap-1 overflow-x-auto border-t border-nw-blue/5 px-4 pb-2 md:hidden"
+        className="flex gap-1 overflow-x-auto border-t border-border/50 px-4 pb-3 md:hidden"
         aria-label="Principal mobile"
       >
         {nav.map((item) => (
@@ -64,8 +65,8 @@ export function AppHeader({
             className={cn(
               "whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium",
               pathname === item.href
-                ? "bg-nw-blue text-white"
-                : "text-nw-blue/80"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground"
             )}
           >
             {item.label}
