@@ -8,6 +8,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 
 const navLinks = [
+  { label: "Quem somos", href: "/#quem-somos" },
   { label: "Como funciona", href: "/#como-funciona" },
   { label: "Categorias", href: "/#categorias" },
 ];
