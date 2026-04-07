@@ -54,6 +54,16 @@ export function LandingFooter() {
             <h4 className="mb-4 font-display font-semibold">Contato</h4>
             <ul className="space-y-2 text-sm text-navy-foreground/60">
               <li>contato@nexwork.com</li>
+              <li>
+                <a
+                  href="https://www.instagram.com/nex_work_?igsh=a2hlbW5rNWVyNDJh&utm_source=qr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition-colors hover:text-navy-foreground"
+                >
+                  Instagram (@nex_work_)
+                </a>
+              </li>
               <li>Suporte aos contratantes</li>
             </ul>
           </div>

@@ -12,16 +12,19 @@ const leadership = [
     name: "Gabriel Almeida",
     role: "CEO",
     description: "Responsável pela visão estratégica da plataforma.",
+    photo: "/team/gabriel-almeida.svg",
   },
   {
     name: "Wendell",
     role: "CTO",
     description: "Responsável pelo desenvolvimento tecnológico.",
+    photo: "/team/wendell.svg",
   },
   {
     name: "Tales",
     role: "CPO",
     description: "Responsável pela experiência do usuário e evolução do produto.",
+    photo: "/team/tales.svg",
   },
 ] as const;
 
@@ -74,11 +77,27 @@ export function QuemSomosSection() {
             {leadership.map((member) => (
               <div
                 key={member.name}
-                className="rounded-2xl border border-border bg-card p-6 text-center shadow-sm"
+                className="rounded-2xl border border-border bg-card p-6 text-left shadow-sm"
               >
-                <p className="font-display text-lg font-semibold text-foreground">{member.name}</p>
-                <p className="mt-1 text-sm font-medium text-primary">{member.role}</p>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{member.description}</p>
+                <div className="flex items-center gap-4">
+                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full bg-muted ring-1 ring-border">
+                    <Image
+                      src={member.photo}
+                      alt={`Retrato de ${member.name}`}
+                      fill
+                      sizes="56px"
+                      className="object-cover object-center"
+                      unoptimized={member.photo.endsWith(".svg")}
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-display text-lg font-semibold leading-tight text-foreground">
+                      {member.name}
+                    </p>
+                    <p className="mt-1 text-sm font-medium text-primary">{member.role}</p>
+                  </div>
+                </div>
+                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{member.description}</p>
               </div>
             ))}
           </div>
