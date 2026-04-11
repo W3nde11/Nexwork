@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { connectDB } from "@/lib/db";
-import { User } from "@/models/User";
 import { signToken, setAuthCookie } from "@/lib/auth";
+import { hashPassword } from "@/lib/password-hash";
+import { User } from "@/models/User";
 
 const schema = z.object({
   email: z.string().email(),
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
         { status: 409 }
       );
     }
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await hashPassword(password);
     const user = await User.create({
       email,
       passwordHash,

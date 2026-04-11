@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { LandingHeader } from "@/components/LandingHeader";
 import { LandingFooter } from "@/components/LandingFooter";
 import { Button } from "@/components/ui/button";
@@ -53,6 +54,15 @@ export default function CadastroPage() {
               Criar conta
             </h1>
             <p className="text-muted-foreground">Contratante — publique e gerencie mensagens</p>
+          </div>
+          <GoogleSignInButton next="/dashboard" className="mb-2" />
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase tracking-wide">
+              <span className="bg-background px-2 text-muted-foreground">ou cadastre-se com e-mail</span>
+            </div>
           </div>
           <form onSubmit={onSubmit} className="space-y-4">
             {error && (

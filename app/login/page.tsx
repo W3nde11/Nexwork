@@ -3,14 +3,30 @@
 import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { LandingHeader } from "@/components/LandingHeader";
 import { LandingFooter } from "@/components/LandingFooter";
 import { Button } from "@/components/ui/button";
+
+const OAUTH_ERRORS: Record<string, string> = {
+  google_denied: "Login com Google foi cancelado.",
+  google_config:
+    "Login com Google não está configurado (credenciais no servidor).",
+  oauth_state:
+    'Sessão inválida ou expirada. Tente "Continuar com Google" de novo.',
+  oauth_failed: "Não foi possível concluir o login com Google.",
+  email_unverified: "O e-mail da conta Google precisa estar verificado.",
+  google_account_mismatch:
+    "Este e-mail já está associado a outra conta Google.",
+  google_oauth: "Não foi possível autorizar com Google.",
+};
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") || "/dashboard";
+  const oauthErr = searchParams.get("error");
+  const oauthMessage = oauthErr ? OAUTH_ERRORS[oauthErr] ?? null : null;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -44,10 +60,19 @@ function LoginForm() {
         <h1 className="mb-2 font-display text-3xl font-bold text-foreground">Entrar</h1>
         <p className="text-muted-foreground">Acesso para contratantes NexWork</p>
       </div>
+      <GoogleSignInButton next={next} className="mb-2" />
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-border" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase tracking-wide">
+          <span className="bg-background px-2 text-muted-foreground">ou com e-mail</span>
+        </div>
+      </div>
       <form onSubmit={onSubmit} className="space-y-4">
-        {error && (
+        {(error || oauthMessage) && (
           <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
-            {error}
+            {error || oauthMessage}
           </p>
         )}
         <div>
@@ -86,6 +111,14 @@ function LoginForm() {
         <Button variant="hero" type="submit" disabled={loading} className="h-11 w-full">
           {loading ? "Entrando…" : "Entrar"}
         </Button>
+        <p className="text-center text-sm">
+          <Link
+            href="/recuperar-senha"
+            className="font-medium text-primary hover:underline"
+          >
+            Esqueceu a senha?
+          </Link>
+        </p>
       </form>
       <p className="mt-6 text-center text-sm text-muted-foreground">
         Não tem conta?{" "}

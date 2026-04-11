@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { connectDB } from "@/lib/db";
-import { User } from "@/models/User";
 import { signToken, setAuthCookie } from "@/lib/auth";
+import { verifyPassword } from "@/lib/password-hash";
+import { User } from "@/models/User";
 
 const schema = z.object({
   email: z.string().email(),
@@ -26,7 +26,16 @@ export async function POST(req: Request) {
         { status: 401 }
       );
     }
-    const ok = await bcrypt.compare(password, user.passwordHash);
+    if (!user.passwordHash) {
+      return NextResponse.json(
+        {
+          error:
+            'Esta conta usa login com Google. Use o botão "Continuar com Google".',
+        },
+        { status: 401 }
+      );
+    }
+    const ok = await verifyPassword(password, user.passwordHash);
     if (!ok) {
       return NextResponse.json(
         { error: "E-mail ou senha incorretos" },

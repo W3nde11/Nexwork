@@ -1,7 +1,21 @@
+import type { NextResponse } from "next/server";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
 const COOKIE = "nw_token";
+
+const authCookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax" as const,
+  path: "/",
+  maxAge: 60 * 60 * 24 * 7,
+};
+
+/** Define o cookie de sessão em uma `NextResponse` (ex.: redirect após OAuth). */
+export function applyAuthCookie(response: NextResponse, token: string) {
+  response.cookies.set(COOKIE, token, authCookieOptions);
+}
 const getSecret = () => {
   const s = process.env.JWT_SECRET;
   if (!s) throw new Error("JWT_SECRET não configurado");
@@ -37,13 +51,7 @@ export async function verifyToken(token: string): Promise<JwtPayload | null> {
 
 export async function setAuthCookie(token: string) {
   const store = await cookies();
-  store.set(COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7,
-  });
+  store.set(COOKIE, token, authCookieOptions);
 }
 
 export async function clearAuthCookie() {

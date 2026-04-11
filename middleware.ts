@@ -15,7 +15,7 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  if (token && (path === "/login" || path === "/cadastro")) {
+  if (token && (path === "/login" || path === "/cadastro" || path === "/recuperar-senha")) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
@@ -23,5 +23,12 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/feed/:path*", "/chat/:path*", "/login", "/cadastro"],
+  matcher: [
+    "/dashboard/:path*",
+    "/feed/:path*",
+    "/chat/:path*",
+    "/login",
+    "/cadastro",
+    "/recuperar-senha",
+  ],
 };
