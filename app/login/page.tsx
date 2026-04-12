@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { LandingHeader } from "@/components/LandingHeader";
-import { LandingFooter } from "@/components/LandingFooter";
+import { AppFooter } from "@/components/AppFooter";
 import { Button } from "@/components/ui/button";
 
 const OAUTH_ERRORS: Record<string, string> = {
@@ -143,7 +143,7 @@ export default function LoginPage() {
           <LoginForm />
         </Suspense>
       </main>
-      <LandingFooter />
+      <AppFooter />
     </div>
   );
 }

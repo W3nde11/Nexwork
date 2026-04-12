@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const protectedPrefixes = ["/dashboard", "/feed", "/chat"];
+const protectedPrefixes = ["/dashboard", "/feed", "/chat", "/conta"];
 
 export function middleware(req: NextRequest) {
   const token = req.cookies.get("nw_token")?.value;
   const path = req.nextUrl.pathname;
+
+  /** Confirmação de exclusão por token — acessível sem login (link no e-mail). */
+  if (path.startsWith("/conta/excluir")) {
+    return NextResponse.next();
+  }
 
   if (protectedPrefixes.some((p) => path === p || path.startsWith(`${p}/`))) {
     if (!token) {
@@ -27,6 +32,8 @@ export const config = {
     "/dashboard/:path*",
     "/feed/:path*",
     "/chat/:path*",
+    "/conta",
+    "/conta/:path*",
     "/login",
     "/cadastro",
     "/recuperar-senha",

@@ -4,8 +4,9 @@ import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LandingHeader } from "@/components/LandingHeader";
-import { LandingFooter } from "@/components/LandingFooter";
+import { AppFooter } from "@/components/AppFooter";
 import { Button } from "@/components/ui/button";
+import { isPasswordPolicyCompliant, PASSWORD_POLICY_DESCRIPTION } from "@/lib/password-policy";
 
 function RedefinirForm() {
   const router = useRouter();
@@ -25,6 +26,10 @@ function RedefinirForm() {
     }
     if (!token.trim()) {
       setError("Link inválido. Use o link enviado por e-mail.");
+      return;
+    }
+    if (!isPasswordPolicyCompliant(password)) {
+      setError(PASSWORD_POLICY_DESCRIPTION);
       return;
     }
     setLoading(true);
@@ -70,14 +75,15 @@ function RedefinirForm() {
           htmlFor="password"
           className="mb-1 block text-sm font-medium text-foreground"
         >
-          Nova senha (mín. 6 caracteres)
+          Nova senha
         </label>
+        <p className="mb-2 text-xs text-muted-foreground">{PASSWORD_POLICY_DESCRIPTION}</p>
         <input
           id="password"
           type="password"
           autoComplete="new-password"
           required
-          minLength={6}
+          minLength={8}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="h-11 w-full rounded-lg border border-border bg-card px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
@@ -96,7 +102,7 @@ function RedefinirForm() {
           type="password"
           autoComplete="new-password"
           required
-          minLength={6}
+          minLength={8}
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
           className="h-11 w-full rounded-lg border border-border bg-card px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
@@ -136,7 +142,7 @@ export default function RedefinirSenhaPage() {
           </p>
         </div>
       </main>
-      <LandingFooter />
+      <AppFooter />
     </div>
   );
 }

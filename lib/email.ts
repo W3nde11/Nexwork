@@ -42,3 +42,42 @@ export async function sendPasswordResetEmail(to: string, resetPathWithToken: str
     throw new Error(`Falha ao enviar e-mail: ${res.status} ${text}`);
   }
 }
+
+export async function sendAccountDeletionEmail(to: string, confirmPathWithToken: string) {
+  const base = getAppBaseUrl();
+  const url = `${base}${confirmPathWithToken.startsWith("/") ? "" : "/"}${confirmPathWithToken}`;
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+
+  if (!apiKey) {
+    if (process.env.NODE_ENV === "development") {
+      console.info(
+        "[account-delete] RESEND_API_KEY não configurado. Link de confirmação (dev apenas):",
+        url
+      );
+    }
+    return;
+  }
+
+  const from = process.env.RESEND_FROM_EMAIL?.trim() || "onboarding@resend.dev";
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to: [to],
+      subject: "Confirmar exclusão da conta — NexWork",
+      html: `<p>Você solicitou excluir sua conta NexWork.</p>
+<p><strong>Se você não pediu isso, ignore este e-mail.</strong> Sua conta permanecerá ativa.</p>
+<p>Para confirmar a exclusão definitiva (vagas, conversas e dados serão removidos), acesse o link abaixo. Ele expira em 24 horas:</p>
+<p><a href="${url}">${url}</a></p>`,
+    }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Falha ao enviar e-mail: ${res.status} ${text}`);
+  }
+}

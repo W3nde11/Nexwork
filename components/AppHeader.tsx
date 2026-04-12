@@ -41,10 +41,19 @@ export function AppHeader({
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-2 md:gap-3">
-          <span className="hidden max-w-[140px] truncate text-sm text-muted-foreground md:inline">
+        <div className="flex min-w-0 items-center gap-2 md:gap-3">
+          <Link
+            href="/conta"
+            title="Minha conta"
+            className={cn(
+              "max-w-[120px] truncate text-sm transition-colors sm:max-w-[160px] md:max-w-[200px]",
+              pathname === "/conta" || pathname.startsWith("/conta/")
+                ? "font-medium text-primary"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
             {userName}
-          </span>
+          </Link>
           <button
             type="button"
             onClick={onLogout}

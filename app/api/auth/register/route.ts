@@ -3,11 +3,12 @@ import { z } from "zod";
 import { connectDB } from "@/lib/db";
 import { signToken, setAuthCookie } from "@/lib/auth";
 import { hashPassword } from "@/lib/password-hash";
+import { passwordSchema } from "@/lib/password-policy";
 import { User } from "@/models/User";
 
 const schema = z.object({
   email: z.string().email(),
-  password: z.string().min(6),
+  password: passwordSchema,
   name: z.string().min(2),
   company: z.string().optional(),
 });

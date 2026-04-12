@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { AppFooter } from "@/components/AppFooter";
 import { AppHeader } from "./AppHeader";
 
 export function AppShell({
@@ -22,6 +23,7 @@ export function AppShell({
     <div className="flex min-h-screen flex-col bg-background">
       <AppHeader userName={userName} onLogout={onLogout} />
       <main className="flex-1">{children}</main>
+      <AppFooter />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins, Inter } from "next/font/google";
+import { FloatingHelpChat } from "@/components/FloatingHelpChat";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -36,6 +37,7 @@ export default function RootLayout({
     <html lang="pt-BR" className={`${poppins.variable} ${inter.variable}`}>
       <body className="min-h-screen bg-background font-sans antialiased">
         {children}
+        <FloatingHelpChat />
       </body>
     </html>
   );

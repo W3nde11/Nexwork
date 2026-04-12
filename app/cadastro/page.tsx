@@ -5,8 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { LandingHeader } from "@/components/LandingHeader";
-import { LandingFooter } from "@/components/LandingFooter";
+import { AppFooter } from "@/components/AppFooter";
 import { Button } from "@/components/ui/button";
+import { isPasswordPolicyCompliant, PASSWORD_POLICY_DESCRIPTION } from "@/lib/password-policy";
 
 export default function CadastroPage() {
   const router = useRouter();
@@ -20,6 +21,10 @@ export default function CadastroPage() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    if (!isPasswordPolicyCompliant(password)) {
+      setError(PASSWORD_POLICY_DESCRIPTION);
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch("/api/auth/register", {
@@ -118,14 +123,15 @@ export default function CadastroPage() {
                 htmlFor="password"
                 className="mb-1 block text-sm font-medium text-foreground"
               >
-                Senha (mín. 6 caracteres)
+                Senha
               </label>
+              <p className="mb-2 text-xs text-muted-foreground">{PASSWORD_POLICY_DESCRIPTION}</p>
               <input
                 id="password"
                 type="password"
                 autoComplete="new-password"
                 required
-                minLength={6}
+                minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="h-11 w-full rounded-lg border border-border bg-card px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
@@ -144,7 +150,7 @@ export default function CadastroPage() {
           </p>
         </div>
       </main>
-      <LandingFooter />
+      <AppFooter />
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { LandingHeader } from "@/components/LandingHeader";
-import { LandingFooter } from "@/components/LandingFooter";
+import { AppFooter } from "@/components/AppFooter";
 import { Button } from "@/components/ui/button";
 
 export default function RecuperarSenhaPage() {
@@ -87,7 +87,7 @@ export default function RecuperarSenhaPage() {
           </p>
         </div>
       </main>
-      <LandingFooter />
+      <AppFooter />
     </div>
   );
 }

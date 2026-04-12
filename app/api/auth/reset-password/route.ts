@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { connectDB } from "@/lib/db";
 import { hashPassword } from "@/lib/password-hash";
+import { passwordSchema } from "@/lib/password-policy";
 import { hashResetToken } from "@/lib/password-reset";
 import { PasswordResetToken } from "@/models/PasswordResetToken";
 import { User } from "@/models/User";
 
 const schema = z.object({
   token: z.string().min(1),
-  password: z.string().min(6),
+  password: passwordSchema,
 });
 
 export async function POST(req: Request) {
