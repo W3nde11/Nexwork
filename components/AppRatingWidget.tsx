@@ -44,7 +44,7 @@ export function AppRatingWidget() {
       <p className="mx-auto max-w-[14rem] text-[11px] leading-snug text-muted-foreground">
         De 1 a 5 estrelas e comentário opcional.
       </p>
-      <div className="mt-2 w-full max-w-sm rounded-lg border border-border bg-card/50 p-3">
+      <div className="mt-2 w-full max-w-sm rounded-lg border border-border bg-secondary/30 p-3">
         {done ? (
           <p className="text-xs text-accent">Obrigado pela sua avaliação!</p>
         ) : (

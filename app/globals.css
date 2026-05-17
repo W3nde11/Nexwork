@@ -71,4 +71,31 @@
   .glass {
     @apply bg-card/80 backdrop-blur-lg border-b border-border/50;
   }
+
+  .app-hero-banner {
+    @apply relative overflow-hidden rounded-3xl border border-navy-foreground/10 bg-navy p-6 text-navy-foreground shadow-card md:p-8;
+    background: linear-gradient(110deg, hsl(var(--navy)) 0%, hsl(var(--navy)) 48%, hsl(var(--primary)) 100%);
+  }
+
+  .app-hero-banner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle, hsl(var(--navy-foreground) / 0.16) 1px, transparent 1.5px);
+    background-size: 12px 12px;
+    mask-image: radial-gradient(ellipse at 58% 50%, black 0%, transparent 28%);
+    opacity: 0.45;
+  }
+
+  .app-hero-banner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, hsl(var(--navy) / 0.36), transparent 48%, hsl(var(--navy) / 0.2));
+  }
+
+  .app-hero-banner > * {
+    @apply relative z-10;
+  }
 }

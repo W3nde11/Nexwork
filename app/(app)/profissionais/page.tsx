@@ -105,16 +105,16 @@ export default function ProfissionaisPage() {
 
   return (
     <div className="container py-8 pb-16">
-      <section className="rounded-3xl border border-border bg-gradient-to-br from-primary/15 via-card to-accent/10 p-6 shadow-card md:p-8">
+      <section className="app-hero-banner">
         <div className="max-w-3xl">
-          <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
+          <span className="inline-flex items-center gap-2 rounded-full bg-navy-foreground/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-navy-foreground">
             <Users className="size-3.5" aria-hidden />
             Profissionais
           </span>
-          <h1 className="mt-4 font-display text-3xl font-bold text-foreground md:text-4xl">
+          <h1 className="mt-4 font-display text-3xl font-bold text-navy-foreground md:text-4xl">
             Busque profissionais qualificados para o seu próximo trabalho.
           </h1>
-          <p className="mt-3 text-sm leading-6 text-muted-foreground md:text-base">
+          <p className="mt-3 text-sm leading-6 text-navy-foreground/75 md:text-base">
             Encontre especialistas por nome, área ou habilidade e publique uma oportunidade para
             iniciar a contratação pela NexWork.
           </p>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import { AppRatingWidget } from "@/components/AppRatingWidget";
 import { cn } from "@/lib/cn";
 import {
   Briefcase,
@@ -78,14 +79,14 @@ export default function DashboardPage() {
         </p>
       )}
 
-      <section className="rounded-3xl border border-border bg-gradient-to-br from-primary/15 via-card to-accent/10 p-6 shadow-card md:p-8">
+      <section className="app-hero-banner">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-2xl">
             <p className="text-sm font-medium text-primary">Painel NexWork</p>
-            <h1 className="mt-2 font-display text-3xl font-bold text-foreground md:text-4xl">
+            <h1 className="mt-2 font-display text-3xl font-bold text-navy-foreground md:text-4xl">
               Bem-vindo{firstName ? `, ${firstName}` : ""}!
             </h1>
-            <p className="mt-3 text-sm leading-6 text-muted-foreground md:text-base">
+            <p className="mt-3 text-sm leading-6 text-navy-foreground/75 md:text-base">
               Acompanhe suas publicações, encontre trabalhos e descubra profissionais para acelerar
               o próximo projeto.
             </p>
@@ -196,36 +197,42 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <aside className="rounded-2xl border border-border bg-card p-6 shadow-card">
-          <h2 className="font-display text-lg font-semibold text-foreground">Seu perfil</h2>
-          <div className="mt-5 space-y-4">
-            <div>
-              <p className="text-xs text-muted-foreground">Nome</p>
-              <p className="font-medium text-foreground">{me?.name ?? "—"}</p>
+        <div className="space-y-6">
+          <aside className="rounded-2xl border border-border bg-card p-6 shadow-card">
+            <h2 className="font-display text-lg font-semibold text-foreground">Seu perfil</h2>
+            <div className="mt-5 space-y-4">
+              <div>
+                <p className="text-xs text-muted-foreground">Nome</p>
+                <p className="font-medium text-foreground">{me?.name ?? "—"}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">E-mail</p>
+                <p className="break-all text-sm font-medium text-foreground">{me?.email ?? "—"}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Empresa</p>
+                <p className="font-medium text-foreground">{me?.company || "Adicione sua empresa"}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground">E-mail</p>
-              <p className="break-all text-sm font-medium text-foreground">{me?.email ?? "—"}</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Empresa</p>
-              <p className="font-medium text-foreground">{me?.company || "Adicione sua empresa"}</p>
-            </div>
-          </div>
-          <Link
-            href="/conta"
-            className={cn(buttonVariants({ variant: "outline" }), "mt-6 w-full")}
-          >
-            Editar perfil
-          </Link>
-          <Link
-            href="/profissionais"
-            className={cn(buttonVariants({ variant: "hero-outline" }), "mt-3 w-full")}
-          >
-            <Users className="size-4" aria-hidden />
-            Buscar profissionais
-          </Link>
-        </aside>
+            <Link
+              href="/conta"
+              className={cn(buttonVariants({ variant: "outline" }), "mt-6 w-full")}
+            >
+              Editar perfil
+            </Link>
+            <Link
+              href="/profissionais"
+              className={cn(buttonVariants({ variant: "hero-outline" }), "mt-3 w-full")}
+            >
+              <Users className="size-4" aria-hidden />
+              Buscar profissionais
+            </Link>
+          </aside>
+
+          <section className="rounded-2xl border border-border bg-card p-6 shadow-card">
+            <AppRatingWidget />
+          </section>
+        </div>
       </section>
     </div>
   );

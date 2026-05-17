@@ -148,17 +148,17 @@ export function TrabalhosClientPage() {
 
   return (
     <div className="container py-8 pb-16">
-      <section className="rounded-3xl border border-border bg-gradient-to-br from-primary/15 via-card to-accent/10 p-6 shadow-card md:p-8">
+      <section className="app-hero-banner">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
+            <span className="inline-flex items-center gap-2 rounded-full bg-navy-foreground/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-navy-foreground">
               <Briefcase className="size-3.5" aria-hidden />
               Trabalhos
             </span>
-            <h1 className="mt-4 font-display text-3xl font-bold text-foreground md:text-4xl">
+            <h1 className="mt-4 font-display text-3xl font-bold text-navy-foreground md:text-4xl">
               Encontre oportunidades para trabalhar ou publicar um novo projeto.
             </h1>
-            <p className="mt-3 text-sm leading-6 text-muted-foreground md:text-base">
+            <p className="mt-3 text-sm leading-6 text-navy-foreground/75 md:text-base">
               Busque por área, orçamento, palavras-chave e compartilhe links públicos para receber
               interessados pelo chat da NexWork.
             </p>
