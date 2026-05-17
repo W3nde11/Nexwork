@@ -1,5 +1,5 @@
 import { TrabalhosClientPage } from "@/components/TrabalhosClientPage";
 
-export default function FeedPage() {
+export default function TrabalhosPage() {
   return <TrabalhosClientPage />;
 }

@@ -8,7 +8,8 @@ import { buttonVariants } from "@/components/ui/button";
 
 const nav = [
   { href: "/dashboard", label: "Dashboard" },
-  { href: "/feed", label: "Trabalhos" },
+  { href: "/trabalhos", label: "Trabalhos" },
+  { href: "/profissionais", label: "Profissionais" },
   { href: "/chat", label: "Mensagens" },
 ];
 
@@ -32,7 +33,7 @@ export function AppHeader({
               href={item.href}
               className={cn(
                 "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                pathname === item.href
+                pathname === item.href || (item.href === "/trabalhos" && pathname === "/feed")
                   ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
                   : "text-muted-foreground hover:bg-secondary hover:text-foreground"
               )}
@@ -73,7 +74,7 @@ export function AppHeader({
             href={item.href}
             className={cn(
               "whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium",
-              pathname === item.href
+              pathname === item.href || (item.href === "/trabalhos" && pathname === "/feed")
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground"
             )}
