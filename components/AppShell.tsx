@@ -6,9 +6,11 @@ import { AppHeader } from "./AppHeader";
 
 export function AppShell({
   userName,
+  userAvatar,
   children,
 }: {
   userName: string;
+  userAvatar?: string | null;
   children: React.ReactNode;
 }) {
   const router = useRouter();
@@ -21,7 +23,7 @@ export function AppShell({
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <AppHeader userName={userName} onLogout={onLogout} />
+      <AppHeader userName={userName} userAvatar={userAvatar} onLogout={onLogout} />
       <main className="flex-1">{children}</main>
       <AppFooter />
     </div>

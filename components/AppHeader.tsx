@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -17,13 +18,40 @@ const nav = [
 
 export function AppHeader({
   userName,
+  userAvatar,
   onLogout,
 }: {
   userName: string;
+  userAvatar?: string | null;
   onLogout: () => void;
 }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const displayName = userName.trim().split(/\s+/)[0] || userName || "Conta";
+  const initials =
+    userName
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "NW";
+  const accountActive = pathname === "/conta" || pathname.startsWith("/conta/");
+  const avatar = (
+    <span className="relative flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-navy-foreground/20 bg-navy-foreground/10 text-xs font-bold text-navy-foreground">
+      {userAvatar ? (
+        <Image
+          src={userAvatar}
+          alt={`Foto de perfil de ${userName}`}
+          fill
+          sizes="36px"
+          className="object-cover"
+          unoptimized
+        />
+      ) : (
+        initials
+      )}
+    </span>
+  );
 
   return (
     <header className="sticky top-0 z-40 border-b border-navy-foreground/10 bg-navy text-navy-foreground shadow-lg shadow-navy/10">
@@ -50,13 +78,14 @@ export function AppHeader({
             href="/conta"
             title="Minha conta"
             className={cn(
-              "max-w-[120px] truncate text-sm transition-colors sm:max-w-[160px] md:max-w-[200px]",
-              pathname === "/conta" || pathname.startsWith("/conta/")
-                ? "font-medium text-accent"
+              "inline-flex max-w-[180px] items-center gap-2 rounded-full px-2 py-1 text-sm transition-colors md:max-w-[220px]",
+              accountActive
+                ? "bg-navy-foreground/10 font-medium text-accent"
                 : "text-navy-foreground/70 hover:text-navy-foreground"
             )}
           >
-            {userName}
+            {avatar}
+            <span className="truncate">{displayName}</span>
           </Link>
           <button
             type="button"
@@ -108,13 +137,27 @@ export function AppHeader({
                 title="Minha conta"
                 onClick={() => setMobileOpen(false)}
                 className={cn(
-                  "block truncate rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-                  pathname === "/conta" || pathname.startsWith("/conta/")
+                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+                  accountActive
                     ? "bg-accent/10 text-navy"
                     : "text-navy/70 hover:bg-navy/5 hover:text-navy"
                 )}
               >
-                {userName}
+                <span className="relative flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-navy/10 bg-navy/5 text-xs font-bold text-navy">
+                  {userAvatar ? (
+                    <Image
+                      src={userAvatar}
+                      alt={`Foto de perfil de ${userName}`}
+                      fill
+                      sizes="36px"
+                      className="object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    initials
+                  )}
+                </span>
+                <span className="truncate">{displayName}</span>
               </Link>
               <button
                 type="button"

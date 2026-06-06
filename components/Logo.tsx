@@ -22,8 +22,8 @@ export function Logo({
       <Image
         src="/logo-nexwork.png"
         alt="NexWork — Organize seu trabalho. Evolua seu negócio."
-        width={1024}
-        height={586}
+        width={584}
+        height={122}
         sizes="(max-width: 768px) 180px, 220px"
         className={cn(
           "h-8 w-auto rounded-lg object-contain object-left md:h-9",
