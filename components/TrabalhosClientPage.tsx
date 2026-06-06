@@ -2,16 +2,18 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Briefcase,
   Clock,
   DollarSign,
   MapPin,
-  Plus,
+  Paperclip,
   Search,
   Share2,
   Tag,
   Users,
+  X,
 } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
@@ -19,10 +21,15 @@ import { cn } from "@/lib/cn";
 type Job = {
   id: string;
   contractorId: string;
+  category?: string;
   title: string;
   description: string;
   budget?: string;
   tags: string[];
+  attachments?: string[];
+  experienceLevel?: "iniciante" | "intermediario" | "especialista";
+  proposalDays?: number;
+  visibility?: "publico" | "privado";
   createdAt: string;
   contractor: { name: string; company?: string } | null;
 };
@@ -40,7 +47,26 @@ const categories = [
   "Outros",
 ];
 
+const experienceOptions = [
+  {
+    value: "iniciante",
+    title: "Iniciante",
+    description: "Estou a procura de freelancers com os menores valores.",
+  },
+  {
+    value: "intermediario",
+    title: "Intermediário",
+    description: "Estou a procura de uma combinação de experiência e valor.",
+  },
+  {
+    value: "especialista",
+    title: "Especialista",
+    description: "Estou disposto a pagar valores mais elevados para freelancers experientes.",
+  },
+] as const;
+
 function getCategory(job: Job) {
+  if (job.category) return job.category;
   const match = job.tags.find((tag) =>
     categories.slice(1, -1).some((category) => category.toLowerCase() === tag.toLowerCase())
   );
@@ -54,17 +80,14 @@ function formatDate(date: string) {
 }
 
 export function TrabalhosClientPage() {
+  const router = useRouter();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [meId, setMeId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todas");
   const [search, setSearch] = useState("");
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [budget, setBudget] = useState("");
-  const [tags, setTags] = useState("");
-  const [saving, setSaving] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -88,6 +111,7 @@ export function TrabalhosClientPage() {
   const filteredJobs = useMemo(() => {
     const term = search.trim().toLowerCase();
     return jobs.filter((job) => {
+      const isMine = meId !== null && job.contractorId === meId;
       const category = getCategory(job);
       const matchesCategory = selectedCategory === "Todas" || category === selectedCategory;
       const searchable = [
@@ -101,43 +125,9 @@ export function TrabalhosClientPage() {
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
-      return matchesCategory && (!term || searchable.includes(term));
+      return !isMine && matchesCategory && (!term || searchable.includes(term));
     });
-  }, [jobs, search, selectedCategory]);
-
-  async function createJob(e: React.FormEvent) {
-    e.preventDefault();
-    setSaving(true);
-    setError("");
-    try {
-      const tagList = tags
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean);
-      const res = await fetch("/api/jobs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title,
-          description,
-          budget: budget || undefined,
-          tags: tagList,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Erro ao publicar.");
-        return;
-      }
-      setTitle("");
-      setDescription("");
-      setBudget("");
-      setTags("");
-      load();
-    } finally {
-      setSaving(false);
-    }
-  }
+  }, [jobs, meId, search, selectedCategory]);
 
   async function removeJob(id: string) {
     if (!confirm("Excluir esta publicação?")) return;
@@ -146,30 +136,60 @@ export function TrabalhosClientPage() {
     else setError("Não foi possível excluir.");
   }
 
+  async function shareJob(job: Job) {
+    const url = `${window.location.origin}/v/${job.id}`;
+    const text = `Confira este projeto na NexWork: ${job.title}`;
+
+    if (navigator.share) {
+      await navigator.share({
+        title: job.title,
+        text,
+        url,
+      });
+      return;
+    }
+
+    window.open(
+      `https://api.whatsapp.com/send?text=${encodeURIComponent(`${text} ${url}`)}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  }
+
+  async function startPrivateConversation(job: Job) {
+    setError("");
+    const res = await fetch("/api/conversations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ jobId: job.id }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.error || "Não foi possível iniciar a conversa.");
+      return;
+    }
+
+    router.push(`/chat?conversation=${data.conversationId}`);
+  }
+
   return (
     <div className="container py-8 pb-16">
       <section className="app-hero-banner">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <span className="inline-flex items-center gap-2 rounded-full bg-navy-foreground/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-navy-foreground">
+            <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
               <Briefcase className="size-3.5" aria-hidden />
               Trabalhos
             </span>
-            <h1 className="mt-4 font-display text-3xl font-bold text-navy-foreground md:text-4xl">
-              Encontre oportunidades para trabalhar ou publicar um novo projeto.
+          <h1 className="mt-4 text-balance font-display text-2xl font-bold leading-tight text-navy sm:text-3xl md:text-4xl">
+              Encontre oportunidades para trabalhar.
             </h1>
-            <p className="mt-3 text-sm leading-6 text-navy-foreground/75 md:text-base">
+            <p className="mt-3 text-sm leading-6 text-muted-foreground md:text-base">
               Busque por área, orçamento, palavras-chave e compartilhe links públicos para receber
               interessados pelo chat da NexWork.
             </p>
           </div>
-          <a
-            href="#nova-publicacao"
-            className={cn(buttonVariants({ variant: "hero", size: "lg" }), "shrink-0")}
-          >
-            <Plus className="size-4" aria-hidden />
-            Publicar trabalho
-          </a>
         </div>
       </section>
 
@@ -179,7 +199,7 @@ export function TrabalhosClientPage() {
         </p>
       )}
 
-      <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+      <section className="mt-8">
         <div>
           <div className="flex flex-col gap-4 md:flex-row">
             <div className="relative flex-1">
@@ -204,7 +224,7 @@ export function TrabalhosClientPage() {
                 type="button"
                 onClick={() => setSelectedCategory(cat)}
                 className={cn(
-                  "rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                  "rounded-full px-3 py-2 text-xs font-medium transition-colors sm:px-4 sm:text-sm",
                   selectedCategory === cat
                     ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
                     : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
@@ -216,7 +236,7 @@ export function TrabalhosClientPage() {
           </div>
 
           <div className="mt-8">
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <h2 className="font-display text-xl font-semibold text-foreground">
                 Trabalhos disponíveis
               </h2>
@@ -249,14 +269,18 @@ export function TrabalhosClientPage() {
                         <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
                           {category}
                         </span>
-                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <span className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
                           <Clock className="size-3.5" aria-hidden />
                           {formatDate(job.createdAt)}
                         </span>
                       </div>
-                      <h3 className="mt-4 font-display text-lg font-semibold text-foreground">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedJob(job)}
+                        className="mt-4 break-words text-left font-display text-lg font-semibold text-foreground transition-colors hover:text-primary hover:underline"
+                      >
                         {job.title}
-                      </h3>
+                      </button>
                       <p className="mt-2 line-clamp-3 text-sm leading-6 text-muted-foreground">
                         {job.description}
                       </p>
@@ -272,9 +296,9 @@ export function TrabalhosClientPage() {
                           <MapPin className="size-4 text-primary" aria-hidden />
                           <span>Remoto ou combinado no chat</span>
                         </p>
-                        <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Users className="size-4 text-primary" aria-hidden />
-                          <span>
+                          <p className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
+                            <Users className="size-4 shrink-0 text-primary" aria-hidden />
+                            <span className="min-w-0 truncate">
                             {job.contractor?.company
                               ? `${job.contractor.name} · ${job.contractor.company}`
                               : job.contractor?.name ?? "Contratante NexWork"}
@@ -296,29 +320,27 @@ export function TrabalhosClientPage() {
                         </div>
                       )}
 
-                      <div className="mt-auto flex flex-wrap gap-2 border-t border-border pt-4">
-                        <Link
-                          href={`/v/${job.id}`}
-                          className={cn(buttonVariants({ variant: "hero", size: "sm" }), "flex-1")}
-                          target="_blank"
-                          rel="noreferrer"
+                      <div className="mt-auto grid gap-2 border-t border-border pt-4 sm:grid-cols-2">
+                        <button
+                          type="button"
+                          onClick={() => startPrivateConversation(job)}
+                          className={cn(buttonVariants({ variant: "hero", size: "sm" }), "w-full")}
                         >
                           Candidatar-se
-                        </Link>
-                        <Link
-                          href={`/v/${job.id}`}
-                          className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
-                          target="_blank"
-                          rel="noreferrer"
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => shareJob(job)}
+                          className={cn(buttonVariants({ variant: "outline", size: "sm" }), "w-full")}
                         >
                           <Share2 className="size-4" aria-hidden />
-                          Detalhes
-                        </Link>
+                          Compartilhar
+                        </button>
                         {mine && (
                           <button
                             type="button"
                             onClick={() => removeJob(job.id)}
-                            className="text-sm font-medium text-destructive hover:underline"
+                            className="rounded-lg px-3 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 sm:col-span-2"
                           >
                             Excluir
                           </button>
@@ -332,73 +354,126 @@ export function TrabalhosClientPage() {
           </div>
         </div>
 
-        <aside
-          id="nova-publicacao"
-          className="h-fit rounded-2xl border border-border bg-card p-6 shadow-card lg:sticky lg:top-24"
-        >
-          <h2 className="font-display text-lg font-semibold text-foreground">Nova publicação</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Descreva o trabalho e gere um link para receber candidatos pelo chat.
-          </p>
-          <form onSubmit={createJob} className="mt-5 space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-foreground">Título</label>
-              <input
-                required
-                minLength={3}
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Ex.: Criar site para loja virtual"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground">Descrição</label>
-              <textarea
-                required
-                minLength={10}
-                rows={4}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Escopo, prazo, formato de contratação..."
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                Orçamento (opcional)
-              </label>
-              <input
-                value={budget}
-                onChange={(e) => setBudget(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Ex.: R$ 1.500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground">
-                Tags e categoria
-              </label>
-              <input
-                value={tags}
-                onChange={(e) => setTags(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Tecnologia, React, Remoto"
-              />
-              <p className="mt-1 text-xs text-muted-foreground">
-                Use uma categoria da lista para aparecer no filtro correto.
-              </p>
-            </div>
-            <button
-              type="submit"
-              disabled={saving}
-              className={cn(buttonVariants({ variant: "success" }), "w-full")}
-            >
-              {saving ? "Publicando..." : "Publicar no feed"}
-            </button>
-          </form>
-        </aside>
       </section>
+
+      {selectedJob && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-navy/60 p-3 py-6 backdrop-blur-sm sm:items-center sm:p-4">
+          <div className="max-h-[calc(100vh-3rem)] w-full max-w-2xl overflow-y-auto rounded-2xl border border-border bg-card p-4 shadow-2xl sm:max-h-[90vh] sm:p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                  {getCategory(selectedJob)}
+                </span>
+                <h2 className="mt-4 break-words font-display text-xl font-bold text-foreground sm:text-2xl">
+                  {selectedJob.title}
+                </h2>
+                <p className="mt-2 break-words text-sm text-muted-foreground">
+                  Publicado por{" "}
+                  {selectedJob.contractor?.company
+                    ? `${selectedJob.contractor.name} · ${selectedJob.contractor.company}`
+                    : selectedJob.contractor?.name ?? "Contratante NexWork"}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedJob(null)}
+                className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                aria-label="Fechar detalhes"
+              >
+                <X className="size-5" aria-hidden />
+              </button>
+            </div>
+
+            <div className="mt-6 space-y-5">
+              <div>
+                <h3 className="text-sm font-semibold text-foreground">Descrição</h3>
+                <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-muted-foreground">
+                  {selectedJob.description}
+                </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <p className="rounded-xl bg-secondary/60 p-3 text-sm text-muted-foreground">
+                  <span className="block text-xs font-medium uppercase tracking-wide text-foreground">
+                    Propostas
+                  </span>
+                  {selectedJob.proposalDays ?? 30} dias
+                </p>
+                <p className="rounded-xl bg-secondary/60 p-3 text-sm text-muted-foreground">
+                  <span className="block text-xs font-medium uppercase tracking-wide text-foreground">
+                    Visibilidade
+                  </span>
+                  {selectedJob.visibility === "privado" ? "Privado" : "Público"}
+                </p>
+                <p className="rounded-xl bg-secondary/60 p-3 text-sm text-muted-foreground">
+                  <span className="block text-xs font-medium uppercase tracking-wide text-foreground">
+                    Experiência
+                  </span>
+                  {experienceOptions.find((option) => option.value === selectedJob.experienceLevel)?.title ??
+                    "Intermediário"}
+                </p>
+                <p className="rounded-xl bg-secondary/60 p-3 text-sm text-muted-foreground">
+                  <span className="block text-xs font-medium uppercase tracking-wide text-foreground">
+                    Local
+                  </span>
+                  Remoto ou combinado no chat
+                </p>
+              </div>
+
+              {selectedJob.tags.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">Habilidades</h3>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {selectedJob.tags
+                      .filter((tag) => tag !== getCategory(selectedJob))
+                      .map((tag) => (
+                        <span
+                          key={tag}
+                          className="inline-flex max-w-full items-center gap-1 rounded-md bg-secondary px-2 py-1 text-xs text-secondary-foreground"
+                        >
+                          <Tag className="size-3" aria-hidden />
+                          <span className="min-w-0 truncate">{tag}</span>
+                        </span>
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              {selectedJob.attachments && selectedJob.attachments.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">Anexos</h3>
+                  <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+                    {selectedJob.attachments.map((file) => (
+                      <li key={file} className="flex min-w-0 items-center gap-2">
+                        <Paperclip className="size-4 shrink-0 text-primary" aria-hidden />
+                        <span className="min-w-0 break-all">{file}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-6 grid gap-2 border-t border-border pt-4 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={() => startPrivateConversation(selectedJob)}
+                className={cn(buttonVariants({ variant: "hero", size: "sm" }), "w-full")}
+              >
+                Candidatar-se
+              </button>
+              <button
+                type="button"
+                onClick={() => shareJob(selectedJob)}
+                className={cn(buttonVariants({ variant: "outline", size: "sm" }), "w-full")}
+              >
+                <Share2 className="size-4" aria-hidden />
+                Compartilhar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

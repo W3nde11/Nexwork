@@ -8,16 +8,16 @@ const values: { label: string; swatch: string }[] = [
 
 export function MissaoVisaoValoresSection() {
   return (
-    <section id="missao-visao-valores" className="scroll-mt-20 bg-secondary/50 py-16 md:py-20">
+    <section id="missao-visao-valores" className="scroll-mt-16 bg-secondary/50 py-16 md:py-20">
       <div className="container">
         <div className="mb-10 text-center md:mb-12">
-          <h2 className="font-display text-2xl font-bold uppercase tracking-wide text-foreground md:text-3xl">
+          <h2 className="text-balance font-display text-2xl font-bold uppercase text-foreground md:text-3xl md:tracking-wide">
             Missão, Visão e Valores
           </h2>
         </div>
 
         <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-2 md:items-stretch md:gap-8">
-          <div className="flex h-full flex-col rounded-2xl border border-border bg-card p-8 shadow-card">
+          <div className="flex h-full flex-col rounded-2xl border border-border bg-card p-5 shadow-card sm:p-8">
             <div>
               <h3 className="font-display text-lg font-bold text-foreground">Missão</h3>
               <p className="mt-3 text-left text-sm leading-relaxed text-muted-foreground md:text-base">
@@ -33,7 +33,7 @@ export function MissaoVisaoValoresSection() {
             </div>
           </div>
 
-          <div className="flex h-full flex-col rounded-2xl border border-border bg-card p-8 shadow-card">
+          <div className="flex h-full flex-col rounded-2xl border border-border bg-card p-5 shadow-card sm:p-8">
             <h3 className="font-display text-lg font-bold text-foreground">Valores</h3>
             <ul className="mt-6 flex flex-col gap-4">
               {values.map((item) => (

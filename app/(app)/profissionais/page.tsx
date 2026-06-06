@@ -107,14 +107,14 @@ export default function ProfissionaisPage() {
     <div className="container py-8 pb-16">
       <section className="app-hero-banner">
         <div className="max-w-3xl">
-          <span className="inline-flex items-center gap-2 rounded-full bg-navy-foreground/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-navy-foreground">
+          <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
             <Users className="size-3.5" aria-hidden />
             Profissionais
           </span>
-          <h1 className="mt-4 font-display text-3xl font-bold text-navy-foreground md:text-4xl">
+          <h1 className="mt-4 text-balance font-display text-2xl font-bold leading-tight text-navy sm:text-3xl md:text-4xl">
             Busque profissionais qualificados para o seu próximo trabalho.
           </h1>
-          <p className="mt-3 text-sm leading-6 text-navy-foreground/75 md:text-base">
+          <p className="mt-3 text-sm leading-6 text-muted-foreground md:text-base">
             Encontre especialistas por nome, área ou habilidade e publique uma oportunidade para
             iniciar a contratação pela NexWork.
           </p>
@@ -143,7 +143,7 @@ export default function ProfissionaisPage() {
               type="button"
               onClick={() => setSelectedCategory(cat)}
               className={cn(
-                "rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                "rounded-full px-3 py-2 text-xs font-medium transition-colors sm:px-4 sm:text-sm",
                 selectedCategory === cat
                   ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
                   : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
@@ -156,7 +156,7 @@ export default function ProfissionaisPage() {
       </section>
 
       <section className="mt-8">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="font-display text-xl font-semibold text-foreground">
             Profissionais em destaque
           </h2>
@@ -180,7 +180,7 @@ export default function ProfissionaisPage() {
                   <h3 className="truncate font-display font-semibold text-foreground">
                     {professional.name}
                   </h3>
-                  <p className="text-sm text-muted-foreground">{professional.role}</p>
+                  <p className="truncate text-sm text-muted-foreground">{professional.role}</p>
                 </div>
               </div>
 
@@ -194,9 +194,9 @@ export default function ProfissionaisPage() {
                 </span>
               </div>
 
-              <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
-                <MapPin className="size-3.5" aria-hidden />
-                <span>{professional.location}</span>
+              <div className="mt-2 flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
+                <MapPin className="size-3.5 shrink-0" aria-hidden />
+                <span className="truncate">{professional.location}</span>
               </div>
 
               <div className="mt-4 flex flex-wrap gap-1.5">
@@ -210,16 +210,16 @@ export default function ProfissionaisPage() {
                 ))}
               </div>
 
-              <div className="mt-5 flex gap-2 border-t border-border pt-4">
+              <div className="mt-5 grid gap-2 border-t border-border pt-4 sm:grid-cols-2">
                 <Link
-                  href="/trabalhos#nova-publicacao"
-                  className={cn(buttonVariants({ variant: "hero", size: "sm" }), "flex-1")}
+                  href="/dashboard"
+                  className={cn(buttonVariants({ variant: "hero", size: "sm" }), "w-full")}
                 >
                   Contratar
                 </Link>
                 <Link
                   href="/chat"
-                  className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+                  className={cn(buttonVariants({ variant: "outline", size: "sm" }), "w-full")}
                 >
                   Mensagem
                 </Link>

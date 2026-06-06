@@ -77,7 +77,7 @@ function RedefinirForm() {
         >
           Nova senha
         </label>
-        <p className="mb-2 text-xs text-muted-foreground">{PASSWORD_POLICY_DESCRIPTION}</p>
+        <p className="mb-2 text-xs leading-relaxed text-muted-foreground">{PASSWORD_POLICY_DESCRIPTION}</p>
         <input
           id="password"
           type="password"
@@ -120,8 +120,8 @@ export default function RedefinirSenhaPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <LandingHeader />
-      <main className="flex flex-1 items-center justify-center py-20">
-        <div className="w-full max-w-md mx-auto p-8">
+      <main className="flex flex-1 items-start justify-center overflow-y-auto py-10 sm:items-center sm:py-20">
+        <div className="mx-auto w-full max-w-md px-4 py-8 sm:p-8">
           <div className="mb-8 text-center">
             <h1 className="mb-2 font-display text-3xl font-bold text-foreground">
               Nova senha

@@ -5,28 +5,28 @@ import { cn } from "@/lib/cn";
 export function Logo({
   className,
   footer,
+  href = "/",
 }: {
   className?: string;
-  /** Fundo claro no rodapé escuro para o wordmark navy aparecer bem */
   footer?: boolean;
+  href?: string;
 }) {
   return (
     <Link
-      href="/"
+      href={href}
       className={cn(
-        "inline-flex items-center transition-opacity hover:opacity-90",
-        footer && "rounded-lg bg-white/95 p-2 shadow-sm",
+        "inline-flex max-w-[48vw] items-center transition-opacity hover:opacity-90 sm:max-w-none",
         className
       )}
     >
       <Image
         src="/logo-nexwork.png"
         alt="NexWork — Organize seu trabalho. Evolua seu negócio."
-        width={260}
-        height={72}
-        sizes="(max-width: 768px) 200px, 260px"
+        width={1024}
+        height={586}
+        sizes="(max-width: 768px) 180px, 220px"
         className={cn(
-          "h-8 w-auto object-contain object-left md:h-9",
+          "h-8 w-auto rounded-lg object-contain object-left md:h-9",
           footer && "md:h-10"
         )}
         priority

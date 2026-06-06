@@ -4,7 +4,8 @@ export interface IConversation {
   _id: mongoose.Types.ObjectId;
   jobId: mongoose.Types.ObjectId;
   contractorId: mongoose.Types.ObjectId;
-  guestSessionId: string;
+  participantId?: mongoose.Types.ObjectId | null;
+  guestSessionId?: string;
   guestName: string;
   createdAt: Date;
   updatedAt: Date;
@@ -14,13 +15,15 @@ const ConversationSchema = new Schema<IConversation>(
   {
     jobId: { type: Schema.Types.ObjectId, ref: "Job", required: true },
     contractorId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    guestSessionId: { type: String, required: true },
+    participantId: { type: Schema.Types.ObjectId, ref: "User", default: null },
+    guestSessionId: { type: String },
     guestName: { type: String, required: true },
   },
   { timestamps: true }
 );
 
 ConversationSchema.index({ jobId: 1, guestSessionId: 1 }, { unique: true });
+ConversationSchema.index({ jobId: 1, participantId: 1 });
 ConversationSchema.index({ contractorId: 1, updatedAt: -1 });
 
 export const Conversation =

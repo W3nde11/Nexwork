@@ -1,5 +1,24 @@
 import Link from "next/link";
+import { Github, Instagram, Linkedin } from "lucide-react";
 import { Logo } from "@/components/Logo";
+
+const socialLinks = [
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/nex_work_?igsh=a2hlbW5rNWVyNDJh&utm_source=qr",
+    icon: Instagram,
+  },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/company/nexwork",
+    icon: Linkedin,
+  },
+  {
+    label: "GitHub",
+    href: "https://github.com/nexwork",
+    icon: Github,
+  },
+] as const;
 
 export function LandingFooter() {
   return (
@@ -55,14 +74,20 @@ export function LandingFooter() {
             <ul className="space-y-2 text-sm text-navy-foreground/60">
               <li>contato@nexwork.com</li>
               <li>
-                <a
-                  href="https://www.instagram.com/nex_work_?igsh=a2hlbW5rNWVyNDJh&utm_source=qr"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="transition-colors hover:text-navy-foreground"
-                >
-                  Instagram (@nex_work_)
-                </a>
+                <div className="flex items-center gap-3 pt-1">
+                  {socialLinks.map((social) => (
+                    <a
+                      key={social.label}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={social.label}
+                      className="flex size-9 items-center justify-center rounded-full border border-navy-foreground/15 text-navy-foreground/70 transition-colors hover:border-navy-foreground/40 hover:text-navy-foreground"
+                    >
+                      <social.icon className="size-4" aria-hidden />
+                    </a>
+                  ))}
+                </div>
               </li>
               <li>Suporte aos contratantes</li>
             </ul>

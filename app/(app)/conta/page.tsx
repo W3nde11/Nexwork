@@ -5,13 +5,9 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  Bell,
   Camera,
   KeyRound,
   Loader2,
-  Smartphone,
-  Mail,
-  MessageCircle,
   Shield,
   UserX,
 } from "lucide-react";
@@ -21,22 +17,36 @@ import { PermanencePolicyModal } from "@/components/account/PermanencePolicyModa
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 
-type Channels = { app: boolean; email: boolean; whatsapp: boolean };
-type Frequency = "per_event" | "daily" | "scheduled";
-
 type Profile = {
   email: string;
   name: string;
   company: string;
   phone: string;
+  professionalTitle: string;
+  bio: string;
+  professionalExperience: string;
+  interestAreas: string[];
+  skills: string[];
+  location: string;
+  portfolio: string;
   avatar: string | null;
   hasPassword?: boolean;
-  notificationChannels: Channels;
-  notificationFrequency: Frequency;
-  notificationScheduledTime: string | null;
 };
 
-const defaultChannels: Channels = { app: true, email: true, whatsapp: false };
+const interestAreaOptions = [
+  "Administração & Contabilidade",
+  "Advogados & Leis",
+  "Atendimento ao Consumidor",
+  "Design & Criação",
+  "Educação & Consultoria",
+  "Engenharia & Arquitetura",
+  "Escrita",
+  "Fotografia & AudioVisual",
+  "Suporte Administrativo",
+  "Tradução",
+  "Vendas & Marketing",
+  "Web, Mobile & Software",
+] as const;
 
 export default function ContaPage() {
   const router = useRouter();
@@ -47,16 +57,21 @@ export default function ContaPage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [pwdOpen, setPwdOpen] = useState(false);
   const [hasPassword, setHasPassword] = useState(false);
+  const [personalEditing, setPersonalEditing] = useState(false);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [phone, setPhone] = useState("");
+  const [professionalTitle, setProfessionalTitle] = useState("");
+  const [bio, setBio] = useState("");
+  const [professionalExperience, setProfessionalExperience] = useState("");
+  const [interestAreas, setInterestAreas] = useState<string[]>([]);
+  const [skills, setSkills] = useState("");
+  const [location, setLocation] = useState("");
+  const [portfolio, setPortfolio] = useState("");
   const [avatar, setAvatar] = useState<string | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  const [channels, setChannels] = useState<Channels>(defaultChannels);
-  const [frequency, setFrequency] = useState<Frequency>("per_event");
-  const [scheduledTime, setScheduledTime] = useState("09:00");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -72,11 +87,15 @@ export default function ContaPage() {
       setEmail(u.email);
       setCompany(u.company ?? "");
       setPhone(u.phone ?? "");
+      setProfessionalTitle(u.professionalTitle ?? "");
+      setBio(u.bio ?? "");
+      setProfessionalExperience(u.professionalExperience ?? "");
+      setInterestAreas(u.interestAreas ?? []);
+      setSkills((u.skills ?? []).join(", "));
+      setLocation(u.location ?? "");
+      setPortfolio(u.portfolio ?? "");
       setAvatar(u.avatar);
       setAvatarPreview(u.avatar);
-      setChannels(u.notificationChannels ?? defaultChannels);
-      setFrequency(u.notificationFrequency ?? "per_event");
-      setScheduledTime(u.notificationScheduledTime ?? "09:00");
       setHasPassword(Boolean(u.hasPassword));
     } finally {
       setLoading(false);
@@ -103,6 +122,7 @@ export default function ContaPage() {
       const data = reader.result as string;
       setAvatarPreview(data);
       setAvatar(data);
+      setPersonalEditing(true);
     };
     reader.readAsDataURL(file);
   }
@@ -110,25 +130,28 @@ export default function ContaPage() {
   function removeAvatar() {
     setAvatar(null);
     setAvatarPreview(null);
+    setPersonalEditing(true);
   }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setMessage(null);
-    if (frequency === "scheduled" && !/^\d{2}:\d{2}$/.test(scheduledTime)) {
-      setMessage({ type: "err", text: "Informe um horário válido (HH:mm)." });
-      return;
-    }
     setSaving(true);
     try {
       const body: Record<string, unknown> = {
         name: name.trim(),
         company: company.trim(),
         phone: phone.trim(),
-        notificationChannels: channels,
-        notificationFrequency: frequency,
-        notificationScheduledTime:
-          frequency === "scheduled" ? scheduledTime : null,
+        professionalTitle: professionalTitle.trim(),
+        bio: bio.trim(),
+        professionalExperience: professionalExperience.trim(),
+        interestAreas,
+        skills: skills
+          .split(",")
+          .map((skill) => skill.trim())
+          .filter(Boolean),
+        location: location.trim(),
+        portfolio: portfolio.trim(),
       };
       if (avatar === null && avatarPreview === null) {
         body.avatar = null;
@@ -147,6 +170,7 @@ export default function ContaPage() {
         return;
       }
       setMessage({ type: "ok", text: "Alterações salvas com sucesso." });
+      setPersonalEditing(false);
       if (data.user?.avatar !== undefined) {
         setAvatar(data.user.avatar);
         setAvatarPreview(data.user.avatar);
@@ -169,8 +193,7 @@ export default function ContaPage() {
       <header className="mb-8 border-b border-border pb-6">
         <h1 className="font-display text-2xl font-bold text-foreground md:text-3xl">Minha conta</h1>
         <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-          Gerencie seus dados na NexWork, a foto que aparece nas conversas e como você prefere ser
-          avisado sobre mensagens e atualizações das suas publicações.
+          Gerencie seus dados na NexWork, a foto que aparece nas conversas e sua senha de acesso.
         </p>
       </header>
 
@@ -250,10 +273,23 @@ export default function ContaPage() {
 
         {/* Dados pessoais */}
         <section className="rounded-2xl border border-border bg-card p-6 shadow-card">
-          <h2 className="font-display text-lg font-semibold text-foreground">Dados pessoais</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Atualize nome, empresa e telefone. O e-mail é o login e não pode ser alterado aqui.
-          </p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h2 className="font-display text-lg font-semibold text-foreground">Dados pessoais</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Atualize nome, empresa e telefone. O e-mail é o login e não pode ser alterado aqui.
+              </p>
+            </div>
+            {!personalEditing && (
+              <button
+                type="button"
+                onClick={() => setPersonalEditing(true)}
+              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "w-full shrink-0 sm:w-auto")}
+              >
+                Editar
+              </button>
+            )}
+          </div>
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2">
               <label htmlFor="name" className="mb-1 block text-sm font-medium text-foreground">
@@ -265,6 +301,7 @@ export default function ContaPage() {
                 minLength={2}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                disabled={!personalEditing}
                 className="h-11 w-full rounded-lg border border-border bg-background px-4 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
@@ -288,6 +325,7 @@ export default function ContaPage() {
                 id="company"
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
+                disabled={!personalEditing}
                 placeholder="Opcional"
                 className="h-11 w-full rounded-lg border border-border bg-background px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               />
@@ -300,184 +338,181 @@ export default function ContaPage() {
                 id="phone"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
+                disabled={!personalEditing}
                 placeholder="Para contato e avisos no WhatsApp"
+                className="h-11 w-full rounded-lg border border-border bg-background px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label htmlFor="professionalTitle" className="mb-1 block text-sm font-medium text-foreground">
+                Título profissional
+              </label>
+              <input
+                id="professionalTitle"
+                value={professionalTitle}
+                onChange={(e) => setProfessionalTitle(e.target.value)}
+                disabled={!personalEditing}
+                placeholder="Ex.: Desenvolvedor Front-end"
+                className="h-11 w-full rounded-lg border border-border bg-background px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label htmlFor="bio" className="mb-1 block text-sm font-medium text-foreground">
+                Sobre mim
+              </label>
+              <textarea
+                id="bio"
+                rows={4}
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                disabled={!personalEditing}
+                placeholder="Conte um pouco sobre seu perfil, interesses e forma de trabalho."
+                className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label htmlFor="professionalExperience" className="mb-1 block text-sm font-medium text-foreground">
+                Experiência profissional
+              </label>
+              <textarea
+                id="professionalExperience"
+                rows={5}
+                value={professionalExperience}
+                onChange={(e) => setProfessionalExperience(e.target.value)}
+                disabled={!personalEditing}
+                placeholder="Descreva suas experiências, projetos anteriores ou atuação profissional."
+                className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <p className="mb-2 block text-sm font-medium text-foreground">Áreas de interesse</p>
+              <div className="grid gap-2 rounded-xl border border-border bg-background p-3 sm:grid-cols-2">
+                {interestAreaOptions.map((area) => {
+                  const checked = interestAreas.includes(area);
+
+                  return (
+                    <label key={area} className="flex cursor-pointer items-start gap-2 text-sm text-foreground">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        disabled={!personalEditing}
+                        onChange={() =>
+                          setInterestAreas((current) =>
+                            checked ? current.filter((item) => item !== area) : [...current, area]
+                          )
+                        }
+                        className="mt-0.5 size-4 shrink-0 rounded border-border accent-primary"
+                      />
+                      <span className="min-w-0 break-words">{area}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="sm:col-span-2">
+              <label htmlFor="skills" className="mb-1 block text-sm font-medium text-foreground">
+                Habilidades
+              </label>
+              <input
+                id="skills"
+                value={skills}
+                onChange={(e) => setSkills(e.target.value)}
+                disabled={!personalEditing}
+                placeholder="Ex.: React, TypeScript, Atendimento, Design"
+                className="h-11 w-full rounded-lg border border-border bg-background px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">Separe as habilidades por vírgulas.</p>
+            </div>
+            <div>
+              <label htmlFor="location" className="mb-1 block text-sm font-medium text-foreground">
+                Local
+              </label>
+              <input
+                id="location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                disabled={!personalEditing}
+                placeholder="Cidade, estado ou remoto"
+                className="h-11 w-full rounded-lg border border-border bg-background px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+            <div>
+              <label htmlFor="portfolio" className="mb-1 block text-sm font-medium text-foreground">
+                Portfólio
+              </label>
+              <input
+                id="portfolio"
+                type="url"
+                value={portfolio}
+                onChange={(e) => setPortfolio(e.target.value)}
+                disabled={!personalEditing}
+                placeholder="https://seuportfolio.com"
                 className="h-11 w-full rounded-lg border border-border bg-background px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
           </div>
 
-          <div className="mt-6 border-t border-border pt-6">
-            <p className="text-sm font-medium text-foreground">Senha de acesso</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Usada junto com o e-mail para entrar na NexWork (contas que não usam só o Google).
-            </p>
-            {hasPassword ? (
+          {personalEditing && (
+            <div className="mt-6 flex flex-col gap-2 border-t border-border pt-6 sm:flex-row sm:flex-wrap">
+              <button
+                type="submit"
+                disabled={saving}
+                className={cn(buttonVariants({ variant: "hero" }), "inline-flex w-full items-center gap-2 sm:w-auto")}
+              >
+                {saving ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    Salvando…
+                  </>
+                ) : (
+                  "Salvar alterações"
+                )}
+              </button>
               <button
                 type="button"
-                onClick={() => setPwdOpen(true)}
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "sm" }),
-                  "mt-3 inline-flex items-center gap-2"
-                )}
+                onClick={() => {
+                  setPersonalEditing(false);
+                  load();
+                }}
+                className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
               >
-                <KeyRound className="size-4 shrink-0" aria-hidden />
-                Alterar senha de acesso
+                Cancelar
               </button>
-            ) : (
-              <p className="mt-3 text-sm text-muted-foreground">
-                Sua conta usa login com Google sem senha NexWork. Para criar uma senha, use{" "}
-                <Link href="/recuperar-senha" className="font-medium text-primary hover:underline">
-                  recuperar senha
-                </Link>{" "}
-                com este e-mail — você receberá um link para definir a senha.
-              </p>
-            )}
-          </div>
+            </div>
+          )}
         </section>
 
-        {/* Notificações */}
         <section className="rounded-2xl border border-border bg-card p-6 shadow-card">
           <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-foreground">
-            <Bell className="size-5 text-accent" aria-hidden />
-            Notificações
+            <KeyRound className="size-5 text-primary" aria-hidden />
+            Senha de acesso
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Escolha onde e com que frequência quer receber lembretes sobre mensagens e atividade nas
-            suas vagas.
+            Usada junto com o e-mail para entrar na NexWork (contas que não usam só o Google).
           </p>
-
-          <div className="mt-6 space-y-3">
-            <p className="text-sm font-medium text-foreground">Canais</p>
-            <div className="space-y-2 rounded-xl border border-border/80 bg-secondary/20 p-4">
-              <label className="flex cursor-pointer items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={channels.app}
-                  onChange={(e) =>
-                    setChannels((c) => ({ ...c, app: e.target.checked }))
-                  }
-                  className="size-4 rounded border-border text-primary focus:ring-primary"
-                />
-                <Smartphone className="size-4 text-primary shrink-0" aria-hidden />
-                <span className="text-sm text-foreground">App / painel NexWork</span>
-              </label>
-              <label className="flex cursor-pointer items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={channels.email}
-                  onChange={(e) =>
-                    setChannels((c) => ({ ...c, email: e.target.checked }))
-                  }
-                  className="size-4 rounded border-border text-primary focus:ring-primary"
-                />
-                <Mail className="size-4 text-primary shrink-0" aria-hidden />
-                <span className="text-sm text-foreground">E-mail</span>
-              </label>
-              <label className="flex cursor-pointer items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={channels.whatsapp}
-                  onChange={(e) =>
-                    setChannels((c) => ({ ...c, whatsapp: e.target.checked }))
-                  }
-                  className="size-4 rounded border-border text-primary focus:ring-primary"
-                />
-                <MessageCircle className="size-4 text-accent shrink-0" aria-hidden />
-                <span className="text-sm text-foreground">WhatsApp</span>
-              </label>
-            </div>
-            {channels.whatsapp && !phone.trim() && (
-              <p className="text-xs text-amber-800">
-                Informe um telefone acima para podermos enviar avisos pelo WhatsApp.
-              </p>
-            )}
-          </div>
-
-          <div className="mt-8 space-y-3">
-            <p className="text-sm font-medium text-foreground">Frequência</p>
-            <div className="space-y-2">
-              <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-transparent p-2 hover:bg-secondary/40 has-[:checked]:border-primary/30 has-[:checked]:bg-primary/5">
-                <input
-                  type="radio"
-                  name="freq"
-                  checked={frequency === "per_event"}
-                  onChange={() => setFrequency("per_event")}
-                  className="mt-1 size-4 border-border text-primary focus:ring-primary"
-                />
-                <span>
-                  <span className="block text-sm font-medium text-foreground">Por evento</span>
-                  <span className="text-xs text-muted-foreground">
-                    Aviso na hora — nova mensagem no chat, candidato interessado, etc.
-                  </span>
-                </span>
-              </label>
-              <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-transparent p-2 hover:bg-secondary/40 has-[:checked]:border-primary/30 has-[:checked]:bg-primary/5">
-                <input
-                  type="radio"
-                  name="freq"
-                  checked={frequency === "daily"}
-                  onChange={() => setFrequency("daily")}
-                  className="mt-1 size-4 border-border text-primary focus:ring-primary"
-                />
-                <span>
-                  <span className="block text-sm font-medium text-foreground">Diário</span>
-                  <span className="text-xs text-muted-foreground">
-                    Um resumo por dia com o que aconteceu nas suas publicações e conversas.
-                  </span>
-                </span>
-              </label>
-              <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-transparent p-2 hover:bg-secondary/40 has-[:checked]:border-primary/30 has-[:checked]:bg-primary/5">
-                <input
-                  type="radio"
-                  name="freq"
-                  checked={frequency === "scheduled"}
-                  onChange={() => setFrequency("scheduled")}
-                  className="mt-1 size-4 border-border text-primary focus:ring-primary"
-                />
-                <span className="flex-1">
-                  <span className="block text-sm font-medium text-foreground">Programado</span>
-                  <span className="text-xs text-muted-foreground">
-                    Receba um resumo no horário que preferir.
-                  </span>
-                  {frequency === "scheduled" && (
-                    <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <label htmlFor="sched" className="text-xs text-muted-foreground">
-                        Horário
-                      </label>
-                      <input
-                        id="sched"
-                        type="time"
-                        value={scheduledTime}
-                        onChange={(e) => setScheduledTime(e.target.value)}
-                        className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                      />
-                    </div>
-                  )}
-                </span>
-              </label>
-            </div>
-          </div>
+          {hasPassword ? (
+            <button
+              type="button"
+              onClick={() => setPwdOpen(true)}
+              className={cn(
+                buttonVariants({ variant: "outline", size: "sm" }),
+                "mt-4 inline-flex w-full items-center gap-2 sm:w-auto"
+              )}
+            >
+              <KeyRound className="size-4 shrink-0" aria-hidden />
+              Alterar senha de acesso
+            </button>
+          ) : (
+            <p className="mt-4 text-sm text-muted-foreground">
+              Sua conta usa login com Google sem senha NexWork. Para criar uma senha, use{" "}
+              <Link href="/recuperar-senha" className="font-medium text-primary hover:underline">
+                recuperar senha
+              </Link>{" "}
+              com este e-mail — você receberá um link para definir a senha.
+            </p>
+          )}
         </section>
 
-        <div className="mt-10 flex justify-start border-t border-border pt-6">
-          <button
-            type="submit"
-            disabled={saving}
-            className={cn(
-              buttonVariants({ variant: "hero", size: "lg" }),
-              "inline-flex items-center justify-center gap-2"
-            )}
-          >
-            {saving ? (
-              <>
-                <Loader2 className="size-4 animate-spin" />
-                Salvando…
-              </>
-            ) : (
-              "Salvar alterações"
-            )}
-          </button>
-        </div>
       </form>
 
       <section className="mt-12 rounded-2xl border border-border bg-navy/[0.03] p-6 md:p-8">
@@ -495,7 +530,7 @@ export default function ContaPage() {
             onClick={() => setPolicyOpen(true)}
             className={cn(
               buttonVariants({ variant: "hero-outline", size: "default" }),
-              "inline-flex items-center justify-center gap-2 border-navy/25 text-navy hover:bg-navy/5"
+              "inline-flex w-full items-center justify-center gap-2 border-navy/25 text-navy hover:bg-navy/5 sm:w-auto"
             )}
           >
             <Shield className="size-4 shrink-0" />
@@ -506,7 +541,7 @@ export default function ContaPage() {
             onClick={() => setDeleteOpen(true)}
             className={cn(
               buttonVariants({ variant: "outline", size: "default" }),
-              "inline-flex items-center justify-center gap-2 border-destructive/40 text-destructive hover:bg-destructive/10"
+              "inline-flex w-full items-center justify-center gap-2 border-destructive/40 text-destructive hover:bg-destructive/10 sm:w-auto"
             )}
           >
             <UserX className="size-4 shrink-0" />

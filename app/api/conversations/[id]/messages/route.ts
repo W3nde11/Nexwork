@@ -7,9 +7,20 @@ import { Conversation } from "@/models/Conversation";
 import type { IMessage } from "@/models/Message";
 import { Message } from "@/models/Message";
 
-const postSchema = z.object({
-  body: z.string().min(1).max(8000),
+const attachmentSchema = z.object({
+  type: z.enum(["image", "document", "link"]),
+  name: z.string().min(1).max(160),
+  url: z.string().min(1).max(2_500_000),
 });
+
+const postSchema = z
+  .object({
+    body: z.string().max(8000).optional(),
+    attachments: z.array(attachmentSchema).max(5).optional(),
+  })
+  .refine((value) => Boolean(value.body?.trim()) || Boolean(value.attachments?.length), {
+    message: "Informe uma mensagem, anexo ou link.",
+  });
 
 type Params = { params: { id: string } };
 
@@ -25,7 +36,9 @@ export async function GET(_req: Request, { params }: Params) {
   try {
     await connectDB();
     const conv = await Conversation.findById(id);
-    if (!conv || conv.contractorId.toString() !== session.sub) {
+    const isParticipant =
+      conv?.contractorId.toString() === session.sub || conv?.participantId?.toString() === session.sub;
+    if (!conv || !isParticipant) {
       return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
     }
     const messages = await Message.find({ conversationId: conv._id })
@@ -37,6 +50,7 @@ export async function GET(_req: Request, { params }: Params) {
         id: String(m._id),
         sender: m.sender,
         body: m.body,
+        attachments: m.attachments ?? [],
         createdAt: m.createdAt,
       })),
     });
@@ -63,21 +77,25 @@ export async function POST(req: Request, { params }: Params) {
   try {
     await connectDB();
     const conv = await Conversation.findById(id);
-    if (!conv || conv.contractorId.toString() !== session.sub) {
+    const isContractor = conv?.contractorId.toString() === session.sub;
+    const isParticipant = conv?.participantId?.toString() === session.sub;
+    if (!conv || (!isContractor && !isParticipant)) {
       return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
     }
     const msg = await Message.create({
       conversationId: conv._id,
-      sender: "contractor",
-      body: parsed.data.body,
+      sender: isContractor ? "contractor" : "guest",
+      body: parsed.data.body?.trim() ?? "",
+      attachments: parsed.data.attachments ?? [],
     });
     conv.updatedAt = new Date();
     await conv.save();
     return NextResponse.json({
       message: {
         id: msg._id.toString(),
-        sender: "contractor" as const,
+        sender: msg.sender,
         body: msg.body,
+        attachments: msg.attachments ?? [],
         createdAt: msg.createdAt,
       },
     });

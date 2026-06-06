@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { connectDB } from "@/lib/db";
 import { signToken, setAuthCookie } from "@/lib/auth";
+import { isOldEnoughForSignup, MINIMUM_SIGNUP_AGE, parseBirthDate } from "@/lib/birth-date-policy";
 import { hashPassword } from "@/lib/password-hash";
 import { passwordSchema } from "@/lib/password-policy";
 import { User } from "@/models/User";
@@ -11,6 +12,9 @@ const schema = z.object({
   password: passwordSchema,
   name: z.string().min(2),
   company: z.string().optional(),
+  birthDate: z.string().refine(isOldEnoughForSignup, {
+    message: `Você precisa ter pelo menos ${MINIMUM_SIGNUP_AGE} anos para criar uma conta.`,
+  }),
 });
 
 export async function POST(req: Request) {
@@ -24,7 +28,11 @@ export async function POST(req: Request) {
       );
     }
     await connectDB();
-    const { email, password, name, company } = parsed.data;
+    const { email, password, name, company, birthDate } = parsed.data;
+    const parsedBirthDate = parseBirthDate(birthDate);
+    if (!parsedBirthDate) {
+      return NextResponse.json({ error: "Data de nascimento inválida" }, { status: 400 });
+    }
     const exists = await User.findOne({ email });
     if (exists) {
       return NextResponse.json(
@@ -38,6 +46,7 @@ export async function POST(req: Request) {
       passwordHash,
       name,
       company,
+      birthDate: parsedBirthDate,
     });
     const token = await signToken({
       sub: user._id.toString(),

@@ -12,6 +12,13 @@ const patchSchema = z
     name: z.string().min(2).max(120).optional(),
     company: z.string().max(200).optional(),
     phone: z.string().max(30).optional(),
+    professionalTitle: z.string().max(160).optional(),
+    bio: z.string().max(1200).optional(),
+    professionalExperience: z.string().max(2500).optional(),
+    interestAreas: z.array(z.string().max(80)).max(12).optional(),
+    skills: z.array(z.string().max(80)).max(30).optional(),
+    location: z.string().max(160).optional(),
+    portfolio: z.string().max(500).optional(),
     avatar: z.string().max(MAX_AVATAR_CHARS).nullable().optional(),
     notificationChannels: z
       .object({
@@ -37,6 +44,13 @@ function serializeUser(user: IUser) {
     name: user.name,
     company: user.company ?? "",
     phone: user.phone ?? "",
+    professionalTitle: user.professionalTitle ?? "",
+    bio: user.bio ?? "",
+    professionalExperience: user.professionalExperience ?? "",
+    interestAreas: user.interestAreas ?? [],
+    skills: user.skills ?? [],
+    location: user.location ?? "",
+    portfolio: user.portfolio ?? "",
     avatar: user.avatar ?? null,
     hasPassword: Boolean(user.passwordHash),
     notificationChannels: {
@@ -83,6 +97,15 @@ export async function PATCH(req: Request) {
     if (data.name !== undefined) update.name = data.name.trim();
     if (data.company !== undefined) update.company = data.company.trim();
     if (data.phone !== undefined) update.phone = data.phone.trim();
+    if (data.professionalTitle !== undefined) update.professionalTitle = data.professionalTitle.trim();
+    if (data.bio !== undefined) update.bio = data.bio.trim();
+    if (data.professionalExperience !== undefined) {
+      update.professionalExperience = data.professionalExperience.trim();
+    }
+    if (data.interestAreas !== undefined) update.interestAreas = data.interestAreas;
+    if (data.skills !== undefined) update.skills = data.skills;
+    if (data.location !== undefined) update.location = data.location.trim();
+    if (data.portfolio !== undefined) update.portfolio = data.portfolio.trim();
     if (data.avatar !== undefined) update.avatar = data.avatar;
     if (data.notificationChannels !== undefined) {
       update.notificationChannels = data.notificationChannels;

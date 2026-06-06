@@ -16,9 +16,9 @@ export function HeroSection() {
         <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-accent/10 blur-3xl" />
       </div>
 
-      <div className="container relative py-20 md:py-32">
+      <div className="container relative py-16 md:py-32">
         <div className="mx-auto max-w-3xl space-y-8 text-center">
-          <h1 className="animate-fade-in font-display text-4xl font-bold leading-tight md:text-6xl">
+          <h1 className="animate-fade-in text-balance font-display text-3xl font-bold leading-tight sm:text-4xl md:text-6xl">
             Conectando <span className="text-gradient">talentos</span> a oportunidades
           </h1>
 
@@ -26,8 +26,7 @@ export function HeroSection() {
             className="mx-auto max-w-xl animate-fade-in text-lg text-navy-foreground/70 md:text-xl"
             style={{ animationDelay: "0.1s" }}
           >
-            Publique trabalhos, compartilhe o link da vaga e converse com interessados —
-            tudo com poucos cliques e visual limpo.
+            Publique trabalhos, compartilhe o link da vaga e converse com interessados.
           </p>
 
           <div
@@ -49,7 +48,7 @@ export function HeroSection() {
             </div>
             <Link
               href="/#categorias"
-              className={cn(buttonVariants({ variant: "hero", size: "lg" }), "h-12")}
+              className={cn(buttonVariants({ variant: "hero", size: "lg" }), "h-12 w-full sm:w-auto")}
             >
               Ver categorias
             </Link>
@@ -61,18 +60,18 @@ export function HeroSection() {
           >
             <Link
               href="/cadastro"
-              className={cn(buttonVariants({ variant: "hero", size: "lg" }), "gap-2")}
+              className={cn(buttonVariants({ variant: "hero", size: "lg" }), "w-full gap-2 sm:w-auto")}
             >
-              Sou contratante <ArrowRight size={18} />
+              Criar conta <ArrowRight size={18} />
             </Link>
             <Link
               href="/login"
               className={cn(
                 buttonVariants({ variant: "hero-outline", size: "lg" }),
-                "border-navy-foreground/30 text-navy-foreground hover:bg-navy-foreground/10 hover:text-navy-foreground gap-2"
+                "w-full gap-2 border-navy-foreground/30 text-navy-foreground hover:bg-navy-foreground/10 hover:text-navy-foreground sm:w-auto"
               )}
             >
-              Já tenho conta
+              acessar minha conta
             </Link>
           </div>
         </div>

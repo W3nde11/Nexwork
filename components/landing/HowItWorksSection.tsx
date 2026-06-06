@@ -25,7 +25,7 @@ const steps = [
 
 export function HowItWorksSection() {
   return (
-    <section id="como-funciona" className="scroll-mt-20 bg-secondary/50 py-20">
+    <section id="como-funciona" className="scroll-mt-16 bg-secondary/50 py-16 md:py-20">
       <div className="container">
         <div className="mb-12 text-center">
           <h2 className="mb-3 font-display text-3xl font-bold text-foreground md:text-4xl">
@@ -40,7 +40,7 @@ export function HowItWorksSection() {
           {steps.map((step, i) => (
             <div
               key={step.title}
-              className="relative rounded-2xl border border-border bg-card p-6 text-center shadow-sm"
+              className="relative rounded-2xl border border-border bg-card p-5 text-center shadow-sm sm:p-6"
             >
               <div className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground">
                 {i + 1}

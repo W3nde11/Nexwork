@@ -48,10 +48,9 @@ export function AppRatingWidget() {
         {done ? (
           <p className="text-xs text-accent">Obrigado pela sua avaliação!</p>
         ) : (
-        <>
-          <div className="flex flex-row flex-wrap items-start justify-center gap-2 sm:gap-3">
+          <div className="flex flex-col items-center gap-3">
             <div
-              className="flex shrink-0 items-center gap-0.5 pt-0.5"
+              className="flex items-center justify-center gap-0.5"
               role="group"
               aria-label="Nota de 1 a 5 estrelas"
               onMouseLeave={() => setHover(0)}
@@ -74,17 +73,18 @@ export function AppRatingWidget() {
                 </button>
               ))}
             </div>
+
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Comentário (opcional)"
               rows={2}
               maxLength={500}
-              className="min-h-[2.75rem] w-full min-w-0 max-w-full flex-1 basis-[12rem] resize-none rounded-md border border-border bg-background px-2 py-1.5 text-left text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary sm:min-h-[3.25rem]"
+              className="min-h-[3.25rem] w-full resize-none rounded-md border border-border bg-background px-2 py-1.5 text-left text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             />
-          </div>
-          {err && <p className="mt-1.5 text-center text-[11px] text-destructive">{err}</p>}
-          <div className="mt-2 flex justify-center">
+
+            {err && <p className="text-center text-[11px] text-destructive">{err}</p>}
+
             <button
               type="button"
               onClick={submit}
@@ -93,7 +93,6 @@ export function AppRatingWidget() {
               Enviar
             </button>
           </div>
-        </>
         )}
       </div>
     </div>

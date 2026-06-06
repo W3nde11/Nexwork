@@ -6,6 +6,7 @@ import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
 import { CTASection } from "@/components/landing/CTASection";
 import { QuemSomosSection } from "@/components/landing/QuemSomosSection";
 import { MissaoVisaoValoresSection } from "@/components/landing/MissaoVisaoValoresSection";
+import { MascoteNexSection } from "@/components/landing/MascoteNexSection";
 
 export default function LandingPage() {
   return (
@@ -15,6 +16,7 @@ export default function LandingPage() {
         <HeroSection />
         <QuemSomosSection />
         <MissaoVisaoValoresSection />
+        <MascoteNexSection />
         <CategoriesSection />
         <HowItWorksSection />
         <CTASection />

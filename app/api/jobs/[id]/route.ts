@@ -15,6 +15,7 @@ const patchSchema = z.object({
   description: z.string().min(10).optional(),
   budget: z.string().optional().nullable(),
   tags: z.array(z.string()).optional(),
+  visibility: z.enum(["publico", "privado"]).optional(),
 });
 
 type Params = { params: { id: string } };
@@ -75,6 +76,7 @@ export async function PATCH(req: Request, { params }: Params) {
     if (d.description !== undefined) job.description = d.description;
     if (d.budget !== undefined) job.budget = d.budget ?? undefined;
     if (d.tags !== undefined) job.tags = d.tags;
+    if (d.visibility !== undefined) job.visibility = d.visibility;
     await job.save();
     return NextResponse.json({ ok: true });
   } catch (e) {

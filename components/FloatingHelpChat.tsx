@@ -19,6 +19,9 @@ const quickLinks = [
   { href: "/termos-de-uso", label: "Termos de Uso" },
 ];
 
+const contactPhoneDigits = SITE_CONTACT_PHONE.replace(/\D/g, "");
+const whatsappHref = `https://wa.me/55${contactPhoneDigits}`;
+
 export function FloatingHelpChat() {
   const [open, setOpen] = useState(false);
 
@@ -42,11 +45,11 @@ export function FloatingHelpChat() {
         />
       )}
 
-      <div className="pointer-events-none fixed bottom-5 right-5 z-[60] flex max-w-[100vw] flex-col items-end gap-3 p-0 sm:bottom-6 sm:right-6">
+      <div className="pointer-events-none fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] z-[60] flex max-w-[100vw] flex-col items-end gap-3 p-0 sm:bottom-6 sm:right-6">
         <div
           id="help-chat-panel"
           className={cn(
-            "pointer-events-auto w-[min(calc(100vw-2.5rem),22rem)] origin-bottom-right transition-all duration-200",
+            "pointer-events-auto w-[min(calc(100vw-2rem),22rem)] origin-bottom-right transition-all duration-200",
             open
               ? "visible scale-100 opacity-100"
               : "invisible pointer-events-none scale-95 opacity-0"
@@ -117,10 +120,21 @@ export function FloatingHelpChat() {
                   <li className="flex items-start gap-2">
                     <Phone className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden />
                     <a
-                      href={`tel:${SITE_CONTACT_PHONE.replace(/\D/g, "")}`}
+                      href={`tel:${contactPhoneDigits}`}
                       className="text-foreground hover:text-primary"
                     >
                       {SITE_CONTACT_PHONE}
+                    </a>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <MessageCircle className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden />
+                    <a
+                      href={whatsappHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-foreground hover:text-primary"
+                    >
+                      WhatsApp {SITE_CONTACT_PHONE}
                     </a>
                   </li>
                 </ul>

@@ -15,6 +15,14 @@ export interface IUser {
   googleId?: string | null;
   name: string;
   company?: string;
+  professionalTitle?: string;
+  bio?: string;
+  professionalExperience?: string;
+  interestAreas?: string[];
+  skills?: string[];
+  location?: string;
+  portfolio?: string;
+  birthDate?: Date;
   /** Telefone para contato / WhatsApp (notificações). */
   phone?: string;
   /** Data URL da imagem ou URL https pública. */
@@ -42,6 +50,14 @@ const UserSchema = new Schema<IUser>(
     googleId: { type: String, sparse: true, unique: true },
     name: { type: String, required: true },
     company: { type: String },
+    professionalTitle: { type: String, default: "" },
+    bio: { type: String, default: "" },
+    professionalExperience: { type: String, default: "" },
+    interestAreas: [{ type: String }],
+    skills: [{ type: String }],
+    location: { type: String, default: "" },
+    portfolio: { type: String, default: "" },
+    birthDate: { type: Date },
     phone: { type: String, default: "" },
     avatar: { type: String, default: null },
     notificationChannels: {

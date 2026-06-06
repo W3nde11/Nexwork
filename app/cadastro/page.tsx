@@ -7,6 +7,11 @@ import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { LandingHeader } from "@/components/LandingHeader";
 import { AppFooter } from "@/components/AppFooter";
 import { Button } from "@/components/ui/button";
+import {
+  getLatestAllowedBirthDateInputValue,
+  isOldEnoughForSignup,
+  MINIMUM_SIGNUP_AGE,
+} from "@/lib/birth-date-policy";
 import { isPasswordPolicyCompliant, PASSWORD_POLICY_DESCRIPTION } from "@/lib/password-policy";
 
 export default function CadastroPage() {
@@ -14,15 +19,21 @@ export default function CadastroPage() {
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
   const [email, setEmail] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const maxBirthDate = getLatestAllowedBirthDateInputValue();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     if (!isPasswordPolicyCompliant(password)) {
       setError(PASSWORD_POLICY_DESCRIPTION);
+      return;
+    }
+    if (!isOldEnoughForSignup(birthDate)) {
+      setError(`Você precisa ter pelo menos ${MINIMUM_SIGNUP_AGE} anos para criar uma conta.`);
       return;
     }
     setLoading(true);
@@ -34,6 +45,7 @@ export default function CadastroPage() {
           name,
           company: company || undefined,
           email,
+          birthDate,
           password,
         }),
       });
@@ -52,20 +64,20 @@ export default function CadastroPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <LandingHeader />
-      <main className="flex flex-1 items-center justify-center py-20">
-        <div className="w-full max-w-md mx-auto p-8">
+      <main className="flex flex-1 items-start justify-center overflow-y-auto py-10 sm:items-center sm:py-20">
+        <div className="mx-auto w-full max-w-md px-4 py-8 sm:p-8">
           <div className="mb-8 text-center">
             <h1 className="mb-2 font-display text-3xl font-bold text-foreground">
               Criar conta
             </h1>
-            <p className="text-muted-foreground">Contratante — publique e gerencie mensagens</p>
+            <p className="text-muted-foreground">Publique oportunidades e converse com interessados</p>
           </div>
           <GoogleSignInButton next="/dashboard" className="mb-2" />
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-border" />
             </div>
-            <div className="relative flex justify-center text-xs uppercase tracking-wide">
+            <div className="relative flex justify-center text-center text-xs uppercase tracking-wide">
               <span className="bg-background px-2 text-muted-foreground">ou cadastre-se com e-mail</span>
             </div>
           </div>
@@ -104,6 +116,24 @@ export default function CadastroPage() {
               />
             </div>
             <div>
+              <label htmlFor="birthDate" className="mb-1 block text-sm font-medium text-foreground">
+                Data de nascimento
+              </label>
+              <input
+                id="birthDate"
+                type="date"
+                autoComplete="bday"
+                required
+                max={maxBirthDate}
+                value={birthDate}
+                onChange={(e) => setBirthDate(e.target.value)}
+                className="h-11 w-full rounded-lg border border-border bg-card px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                Permitido apenas para maiores de {MINIMUM_SIGNUP_AGE} anos.
+              </p>
+            </div>
+            <div>
               <label htmlFor="email" className="mb-1 block text-sm font-medium text-foreground">
                 E-mail
               </label>
@@ -125,7 +155,7 @@ export default function CadastroPage() {
               >
                 Senha
               </label>
-              <p className="mb-2 text-xs text-muted-foreground">{PASSWORD_POLICY_DESCRIPTION}</p>
+              <p className="mb-2 text-xs leading-relaxed text-muted-foreground">{PASSWORD_POLICY_DESCRIPTION}</p>
               <input
                 id="password"
                 type="password"
