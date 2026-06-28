@@ -4,6 +4,8 @@ NexWork e uma plataforma web para conectar contratantes, profissionais e oportun
 
 A aplicacao foi desenvolvida com Next.js, React, TypeScript, Tailwind CSS e MongoDB, usando rotas de API internas para autenticacao, cadastro, publicacao de trabalhos, mensagens, recuperacao de senha e gerenciamento de conta.
 
+link de acesso a plataforma: https://nexwork-topaz.vercel.app/
+
 ## Indice
 
 - [Sobre o projeto](#sobre-o-projeto)
